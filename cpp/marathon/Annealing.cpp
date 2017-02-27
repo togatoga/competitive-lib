@@ -6,9 +6,11 @@ public:
   double start_time, end_time;
   double best_score;
   double param1, param2;
-  Annealing(double initial_temp, double end_time, double start_time) {
+  XorShift rnd;
+  Annealing(double initial_temp, double end_time, double start_time, XorShift rnd) {
     this->initial_temp = initial_temp;
     this->current_temp = initial_temp;
+    this->rnd = rnd;
 
     this->best_score = 0;
 
@@ -19,7 +21,7 @@ public:
     this->param1 = 1.0 / (simulate_time / TEMP_CTRL_PARAM);
     this->param2 = 1.0 / exp(TEMP_CTRL_PARAM);
   }
-  bool coolDown(double elapsed) {
+  bool cool_down(double elapsed) {
     if (elapsed >= end_time)
       return false;
     // linear function
