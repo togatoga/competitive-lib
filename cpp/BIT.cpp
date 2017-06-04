@@ -4,7 +4,7 @@ public:
   BIT(int N) : N(N) { dat.assign(N, 0); }
   // sum [0,i)
   T sum(int i) {
-    int ret = 0;
+    T ret = 0;
     for (--i; i >= 0; i = (i & (i + 1)) - 1)
       ret += dat[i];
     return ret;
