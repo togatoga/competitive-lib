@@ -48,6 +48,35 @@ func (s *FastScanner) NextInt64() int64 {
 	return v
 }
 
+func (s *Scanner) NextIntArray() []int {
+	s.pre()
+	start := s.p
+	result := []int{}
+	for ; s.p < len(s.buf)+1; s.p++ {
+		if s.p == len(s.buf) || s.buf[s.p] == ' ' {
+			v, _ := strconv.ParseInt(string(s.buf[start:s.p]), 10, 0)
+			result = append(result, int(v))
+			start = s.p + 1
+		}
+	}
+
+	return result
+}
+
+func (s *Scanner) NextInt64Array() []int64 {
+	s.pre()
+	start := s.p
+	result := []int64{}
+	for ; s.p < len(s.buf)+1; s.p++ {
+		if s.p == len(s.buf) || s.buf[s.p] == ' ' {
+			v, _ := strconv.ParseInt(string(s.buf[start:s.p]), 10, 64)
+			result = append(result, v)
+			start = s.p + 1
+		}
+	}
+	return result
+}
+
 func (s *FastScanner) pre() {
 	if s.p >= len(s.buf) {
 		s.readLine()
