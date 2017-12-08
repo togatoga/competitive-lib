@@ -48,7 +48,7 @@ func (s *FastScanner) NextInt64() int64 {
 	return v
 }
 
-func (s *Scanner) NextIntArray() []int {
+func (s *FastScanner) NextIntArray() []int {
 	s.pre()
 	start := s.p
 	result := []int{}
@@ -63,7 +63,7 @@ func (s *Scanner) NextIntArray() []int {
 	return result
 }
 
-func (s *Scanner) NextInt64Array() []int64 {
+func (s *FastScanner) NextInt64Array() []int64 {
 	s.pre()
 	start := s.p
 	result := []int64{}
