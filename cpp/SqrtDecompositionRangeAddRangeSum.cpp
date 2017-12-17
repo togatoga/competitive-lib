@@ -80,6 +80,7 @@ class SqrtDecompositionRangeAddRangeSum
     {
         int k = i / sqrtN;
         eval(k);
+        bucket_sum[k] += val - data[i];
         data[i] = val;
     }
     void eval(int k)
