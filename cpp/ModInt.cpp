@@ -33,10 +33,18 @@ struct ModInt
         while (*v)
         {
             ll t = *u / *v;
-            rep(i, 3) swap(u[i] -= t * v[i], v[i]);
+            for (int i = 0; i < 3; i++)
+            {
+                swap(u[i] -= t * v[i], v[i]);
+            }
         }
         if (u[0] < 0)
-            rep(i, 3) u[i] = -u[i];
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                u[i] = -u[i];
+            }
+        }
         x = u[1], y = u[2];
         return u[0];
     }
