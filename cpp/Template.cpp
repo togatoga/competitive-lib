@@ -40,6 +40,10 @@ using namespace std;
 using ll = long long;
 using ull = unsigned long long;
 using pii = pair<int, int>;
+template <class T>
+using max_priority_queue = priority_queue<T>;
+template <class T>
+using min_priority_queue = priority_queue<T, std::vector<T>, std::greater<T>>;
 
 const int INF = 1 << 29;
 const ll LL_INF = 1LL << 60;
