@@ -52,7 +52,9 @@ const ll MOD = 1000000007;
 
 const int dx[] = {1, 0, -1, 0}, dy[] = {0, -1, 0, 1};
 
-int main() {
-
+int main()
+{
+  cin.tie(0);
+  ios::sync_with_stdio(false);
   return 0;
 }
