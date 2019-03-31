@@ -1,6 +1,15 @@
-fn main() {
+fn solve() {
     let s = std::io::stdin();
     let mut sc = Scanner { stdin: s.lock() };
+}
+
+fn main() {
+    std::thread::Builder::new()
+        .stack_size(64 * 1024 * 1024) // 64MB
+        .spawn(|| solve())
+        .unwrap()
+        .join()
+        .unwrap();
 }
 
 //snippet from kenkoooo
