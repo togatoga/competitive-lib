@@ -15,7 +15,7 @@ impl ModUtil {
         }
         inv_fact[0] = 1;
         for i in 1..size + 1 {
-            inv_fact[i] = mod_pow(fact[i], module - 2, module);
+            inv_fact[i] = ModUtil::mod_pow(fact[i], module - 2, module);
         }
         ModUtil {
             fact: fact,
@@ -37,21 +37,41 @@ impl ModUtil {
         self.fact[x]
     }
     pub fn inv(&self, x: usize) -> usize {
-        mod_pow(x, self.module - 2, self.module)
+        ModUtil::mod_pow(x, self.module - 2, self.module)
     }
     pub fn inv_fact(&self, x: usize) -> usize {
         self.inv(self.fact[x])
     }
+
+    fn mod_pow(x: usize, n: usize, module: usize) -> usize {
+        if n == 0 {
+            return 1;
+        }
+        let mut res: usize = ModUtil::mod_pow(x, n / 2, module);
+        res = (res % module * res % module) % module;
+        if n % 2 == 1 {
+            res *= x;
+        }
+        res % module
+    }
 }
 
-fn mod_pow(x: usize, n: usize, module: usize) -> usize {
-    if n == 0 {
-        return 1;
-    }
-    let mut res: usize = mod_pow(x, n / 2, module);
-    res = (res % module * res % module) % module;
-    if n % 2 == 1 {
-        res *= x;
-    }
-    res % module
+
+#[test]
+fn test_mod_util() {
+    const module: usize = 1e9 as usize + 7;
+    let mod_util = ModUtil::new(1000, module);
+    //fact
+    assert_eq!(mod_util.fact(5), 120);
+    assert_eq!(mod_util.fact(10), 3628800);
+    assert_eq!(mod_util.fact(500), 688653593);
+    assert_eq!(mod_util.fact(1000), 641419708);
+    //combination
+    assert_eq!(mod_util.combination(5, 3), 10);
+    assert_eq!(mod_util.combination(10, 2), 45);
+    assert_eq!(mod_util.combination(1000, 500), 159835829);
+    //permutation
+    assert_eq!(mod_util.permutation(5, 3), 60);
+    assert_eq!(mod_util.permutation(10, 3), 720);
+    assert_eq!(mod_util.permutation(1000, 999), 641419708);
 }
