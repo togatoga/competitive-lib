@@ -47,7 +47,7 @@ impl UnionFind {
         self.parent[x] = root as i32;
         return root;
     }
-    pub fn set_size(&mut self, x: usize) -> usize {
+    pub fn union_size(&mut self, x: usize) -> usize {
         let root = self.root(x);
         let set_size = -1 * self.parent[root];
         return set_size as usize;
