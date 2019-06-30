@@ -56,22 +56,25 @@ impl ModUtil {
     }
 }
 
-
-#[test]
-fn test_mod_util() {
-    const module: usize = 1e9 as usize + 7;
-    let mod_util = ModUtil::new(1000, module);
-    //fact
-    assert_eq!(mod_util.fact(5), 120);
-    assert_eq!(mod_util.fact(10), 3628800);
-    assert_eq!(mod_util.fact(500), 688653593);
-    assert_eq!(mod_util.fact(1000), 641419708);
-    //combination
-    assert_eq!(mod_util.combination(5, 3), 10);
-    assert_eq!(mod_util.combination(10, 2), 45);
-    assert_eq!(mod_util.combination(1000, 500), 159835829);
-    //permutation
-    assert_eq!(mod_util.permutation(5, 3), 60);
-    assert_eq!(mod_util.permutation(10, 3), 720);
-    assert_eq!(mod_util.permutation(1000, 999), 641419708);
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn test_mod_util() {
+        const module: usize = 1e9 as usize + 7;
+        let mod_util = ModUtil::new(1000, module);
+        //fact
+        assert_eq!(mod_util.fact(5), 120);
+        assert_eq!(mod_util.fact(10), 3628800);
+        assert_eq!(mod_util.fact(500), 688653593);
+        assert_eq!(mod_util.fact(1000), 641419708);
+        //combination
+        assert_eq!(mod_util.combination(5, 3), 10);
+        assert_eq!(mod_util.combination(10, 2), 45);
+        assert_eq!(mod_util.combination(1000, 500), 159835829);
+        //permutation
+        assert_eq!(mod_util.permutation(5, 3), 60);
+        assert_eq!(mod_util.permutation(10, 3), 720);
+        assert_eq!(mod_util.permutation(1000, 999), 641419708);
+    }
 }
