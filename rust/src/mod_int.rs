@@ -12,12 +12,13 @@ pub mod mod_int {
         }
         pub fn pow(self, e: usize) -> ModInt<Num> {
             let mut result = ModInt::new(1);
-            let cur = self;
+            let mut cur = self;
             let mut e = e;
             while e > 0 {
                 if e & 1 == 1 {
                     result *= cur;
                 }
+                cur *= cur;
                 e >>= 1;
             }
             result
@@ -99,5 +100,31 @@ pub mod mod_int {
         fn mul_assign(&mut self, rhs: Num) {
             *self = *self * rhs;
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::mod_int::*;
+    #[test]
+    fn test_zero() {
+        let a = ModInt::new(1_000_000_000);
+        let b = ModInt::new(7);
+        let c = a + b;
+
+        assert_eq!(c.0, 0);
+    }
+    #[test]
+    fn test_mul() {
+        let a = ModInt::new(1000);
+        let b = ModInt::new(1234);
+        let c = a * b;
+        assert_eq!(c.0, 1234000);
+    }
+    #[test]
+    fn test_pow() {
+        let a = ModInt::new(2);
+        let b = a.pow(10).0;
+        assert_eq!(b, 1024);
     }
 }
