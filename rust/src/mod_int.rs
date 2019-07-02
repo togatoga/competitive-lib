@@ -1,8 +1,8 @@
 pub mod mod_int {
     use std::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};
-    type Num = i64;
+    type Num = usize;
     //we may need to change this value
-    const MOD: Num = 1e9 + Num + 7;
+    const MOD: Num = 1e9 as Num + 7;
     #[derive(Clone, Copy, Debug)]
     pub struct ModInt<T: Copy + Clone>(pub T);
 
@@ -12,7 +12,7 @@ pub mod mod_int {
         }
         pub fn pow(self, e: usize) -> ModInt<Num> {
             let mut result = ModInt::new(1);
-            let mut cur = self;
+            let cur = self;
             let mut e = e;
             while e > 0 {
                 if e & 1 == 1 {
@@ -20,17 +20,19 @@ pub mod mod_int {
                 }
                 e >>= 1;
             }
-            result;
+            result
         }
     }
 
     impl Add<ModInt<Num>> for ModInt<Num> {
+        type Output = ModInt<Num>;
         fn add(self, rhs: ModInt<Num>) -> ModInt<Num> {
             self + rhs.0
         }
     }
 
     impl Add<Num> for ModInt<Num> {
+        type Output = ModInt<Num>;
         fn add(self, rhs: Num) -> ModInt<Num> {
             let mut tmp = rhs + self.0;
             if tmp >= self::MOD {
@@ -40,11 +42,13 @@ pub mod mod_int {
         }
     }
     impl Sub<ModInt<Num>> for ModInt<Num> {
+        type Output = ModInt<Num>;
         fn sub(self, rhs: ModInt<Num>) -> ModInt<Num> {
             self - rhs.0
         }
     }
     impl Sub<Num> for ModInt<Num> {
+        type Output = ModInt<Num>;
         fn sub(self, rhs: Num) -> ModInt<Num> {
             let rhs = if rhs >= MOD { rhs % MOD } else { rhs };
             let value = if self.0 < rhs { self.0 + MOD } else { self.0 };
@@ -74,11 +78,13 @@ pub mod mod_int {
     }
 
     impl Mul<ModInt<Num>> for ModInt<Num> {
+        type Output = ModInt<Num>;
         fn mul(self, rhs: ModInt<Num>) -> ModInt<Num> {
             self * rhs.0
         }
     }
     impl Mul<Num> for ModInt<Num> {
+        type Output = ModInt<Num>;
         fn mul(self, rhs: Num) -> ModInt<Num> {
             ModInt(self.0 * rhs % self::MOD)
         }
@@ -94,5 +100,4 @@ pub mod mod_int {
             *self = *self * rhs;
         }
     }
-
 }
