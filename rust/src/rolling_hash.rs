@@ -1,7 +1,7 @@
 pub mod rolling_hash {
     const MASK_SIZE: usize = 2;
     static MOD: [u64; MASK_SIZE] = [999999937u64, 1000000007u64];
-    const BASE: u64 = 9973;
+    const BASE: [u64; MASK_SIZE] = [9973, 10007];
     pub struct RollingHash {
         hash: Vec<Vec<u64>>,
         pow: Vec<Vec<u64>>,
@@ -10,13 +10,13 @@ pub mod rolling_hash {
     impl RollingHash {
         pub fn new(s: &[u64]) -> RollingHash {
             let n = s.len();
-            let mut hash: Vec<Vec<u64>> = vec![vec![0u64; n + 1]; 2];
-            let mut pow: Vec<Vec<u64>> = vec![vec![0u64; n + 1]; 2];
+            let mut hash: Vec<Vec<u64>> = vec![vec![0u64; n + 1]; MASK_SIZE];
+            let mut pow: Vec<Vec<u64>> = vec![vec![0u64; n + 1]; MASK_SIZE];
             for i in 0..MASK_SIZE {
                 pow[i][0] = 1;
                 for j in 0..n {
-                    pow[i][j + 1] = pow[i][j] * BASE % MOD[i];
-                    hash[i][j + 1] = (hash[i][j] * BASE + s[j]) % MOD[i];
+                    pow[i][j + 1] = pow[i][j] * BASE[i] % MOD[i];
+                    hash[i][j + 1] = ((hash[i][j] + s[j]) * BASE[i]) % MOD[i];
                 }
             }
             RollingHash {
@@ -56,6 +56,10 @@ mod tests {
         assert_eq!(rh.hash(0, 1), rh.hash(3, 4));
         assert!(rh.equal(0, 3, 3, 6));
         assert_ne!(rh.hash(0, 4), rh.hash(0, 3));
+
+        let seq: Vec<u64> = "xy".chars().map(|c| c as u64).collect();
+        assert_ne!(rh.hash(0, 1), rh.hash(1, 2));
+        assert_ne!(rh.hash(0, 2), rh.hash(1, 2));
     }
     #[test]
     fn test_random_rolling_hash() {
