@@ -66,16 +66,16 @@ mod tests {
 
     #[test]
     fn test_random_binary_search() {
-        let test_case = 10;
-        let max_value = 100;
+        let test_case = 50;
+        let max_value = 200;
         let query_num = 100;
         let mut rng = thread_rng();
         for _ in 0..test_case {
-            let mut seq: Vec<i32> = (0..100).map(|_| rng.gen_range(0, max_value)).collect();
+            let mut seq: Vec<i32> = (0..500).map(|_| rng.gen_range(0, max_value)).collect();
             seq.sort();
 
             for _ in 0..query_num {
-                let query = rng.gen_range(0, max_value);
+                let query = rng.gen_range(0, max_value + 100);
                 let result = (seq.lower_bound(&query), seq.upper_bound(&query));
                 //sequential search
                 let naive_search = |x: i32| {
