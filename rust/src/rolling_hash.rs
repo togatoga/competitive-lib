@@ -58,6 +58,7 @@ mod tests {
         assert_ne!(rh.hash(0, 4), rh.hash(0, 3));
 
         let seq: Vec<u64> = "xy".chars().map(|c| c as u64).collect();
+        let rh = rolling_hash::RollingHash::new(&seq);
         assert_ne!(rh.hash(0, 1), rh.hash(1, 2));
         assert_ne!(rh.hash(0, 2), rh.hash(1, 2));
     }

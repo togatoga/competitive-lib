@@ -61,8 +61,8 @@ mod test {
     use super::*;
     #[test]
     fn test_mod_util() {
-        const module: usize = 1e9 as usize + 7;
-        let mod_util = ModUtil::new(1000, module);
+        const MOD: usize = 1e9 as usize + 7;
+        let mod_util = ModUtil::new(1000, MOD);
         //fact
         assert_eq!(mod_util.fact(5), 120);
         assert_eq!(mod_util.fact(10), 3628800);
@@ -79,7 +79,7 @@ mod test {
 
         //inv fact
         for i in 1..1000 {
-            let one = mod_util.fact(i) * mod_util.inv_fact(i) % module;
+            let one = mod_util.fact(i) * mod_util.inv_fact(i) % MOD;
             assert_eq!(one, 1);
         }
     }
