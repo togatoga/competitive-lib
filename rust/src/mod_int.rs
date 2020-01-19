@@ -1,5 +1,5 @@
 pub mod mod_int {
-    use std::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};
+    use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
     //we may need to change this value
     const MOD: i64 = 1e9 as i64 + 7;
@@ -59,6 +59,32 @@ pub mod mod_int {
             impl SubAssign<$t> for ModInt<$t> {
                 fn sub_assign(&mut self, rhs: $t) {
                     *self = *self - rhs;
+                }
+            }
+
+            impl Div<$t> for ModInt<$t> {
+                type Output = ModInt<$t>;
+                fn div(self, mut rhs: $t) -> ModInt<$t> {
+                    if rhs >= MOD as $t {
+                        rhs %= MOD as $t;
+                    }
+                    self * ModInt(rhs).pow((MOD - 2) as usize)
+                }
+            }
+            impl Div<ModInt<$t>> for ModInt<$t> {
+                type Output = ModInt<$t>;
+                fn div(self, rhs: ModInt<$t>) -> ModInt<$t> {
+                    self / rhs.0
+                }
+            }
+            impl DivAssign<$t> for ModInt<$t> {
+                fn div_assign(&mut self, rhs: $t) {
+                    *self = *self / rhs
+                }
+            }
+            impl DivAssign<ModInt<$t>> for ModInt<$t> {
+                fn div_assign(&mut self, rhs: ModInt<$t>) {
+                    *self = *self / rhs
                 }
             }
 
