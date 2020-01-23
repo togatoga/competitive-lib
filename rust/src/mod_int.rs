@@ -113,7 +113,7 @@ pub mod mod_int {
             }
             impl ModInt<$t> {
                 pub fn new(x: $t) -> Self {
-                    ModInt(x)
+                    ModInt(x % self::MOD as $t)
                 }
                 pub fn pow(self, e: usize) -> ModInt<$t> {
                     let mut result = ModInt::<$t>::new(1);
@@ -154,6 +154,13 @@ mod test {
         let b = ModInt::new(1234);
         let c = a * b;
         assert_eq!(c.0, 1234000);
+    }
+    #[test]
+    fn test_new() {
+        let x = ModInt::new((1e9 as i64 + 7) as usize);
+        assert_eq!(x.0, 0);
+        let x = ModInt::new((1e9 as i64 + 8) as usize);
+        assert_eq!(x.0, 1);
     }
 
     #[test]
