@@ -1,11 +1,12 @@
 pub mod fenwick_tree {
     //Binary Indexed Tree
+    use std::ops::*;
     pub struct FenwickTree<T> {
         values: Vec<T>,
         init_value: T,
     }
 
-    impl<T: Copy + Clone + std::ops::AddAssign + std::ops::Sub<Output = T>> FenwickTree<T> {
+    impl<T: Copy + Clone + AddAssign + Sub<Output = T>> FenwickTree<T> {
         pub fn new(n: usize, init_value: &T) -> FenwickTree<T> {
             FenwickTree {
                 values: vec![init_value.clone(); n + 1],
@@ -27,10 +28,10 @@ pub mod fenwick_tree {
             result
         }
 
-        pub fn add(&mut self, i: usize, x: &T) {
+        pub fn add(&mut self, i: usize, x: T) {
             let mut index = i;
             while index < self.values.len() {
-                self.values[index] += *x;
+                self.values[index] += x;
                 index |= index + 1;
             }
         }
@@ -49,7 +50,7 @@ mod test {
             let value = thread_rng().gen_range(0, 1000);
             let k = thread_rng().gen_range(0, n);
             v[k] += value;
-            bit.add(k, &value);
+            bit.add(k, value);
 
             let mut sum = 0;
             for i in 0..n {
