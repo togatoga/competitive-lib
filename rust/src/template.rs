@@ -1,6 +1,6 @@
 fn solve() {
-    let s = std::io::stdin();
-    let mut sc = Scanner { stdin: s.lock() };
+    let stdin = std::io::stdin();
+    let mut scn = Scanner { stdin: stdin.lock() };
 }
 
 fn main() {
