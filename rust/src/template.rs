@@ -1,12 +1,24 @@
-fn solve() {
-    let stdin = std::io::stdin();
-    let mut scn = Scanner { stdin: stdin.lock() };
+#[derive(Default)]
+//NOTE
+//declare variables to reduce the number of parameters for dp and dfs etc.
+struct Solver {}
+
+impl Solver {
+    fn solve(&mut self) {
+        let stdin = std::io::stdin();
+        let mut scn = Scanner {
+            stdin: stdin.lock(),
+        };
+    }
 }
 
 fn main() {
     std::thread::Builder::new()
         .stack_size(64 * 1024 * 1024) // 64MB
-        .spawn(|| solve())
+        .spawn(|| {
+            let mut solver = Solver::default();
+            solver.solve()
+        })
         .unwrap()
         .join()
         .unwrap();
