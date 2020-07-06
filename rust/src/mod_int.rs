@@ -97,7 +97,7 @@ pub mod mod_int {
             impl Mul<$t> for ModInt<$t> {
                 type Output = ModInt<$t>;
                 fn mul(self, rhs: $t) -> ModInt<$t> {
-                    ModInt(self.0 * rhs % self::MOD as $t)
+                    ModInt(self.0 * (rhs % self::MOD as $t) % self::MOD as $t)
                 }
             }
             impl MulAssign<ModInt<$t>> for ModInt<$t> {
