@@ -25,6 +25,9 @@ pub mod lazy_segment_tree {
     }
 
     pub struct Max<S>(S);
+    pub struct Min<S>(S);
+    pub struct Additive<S>(S);
+    pub struct Multiplicative<S>(S);
 
     macro_rules! impl_monoid {
         ($($ty:ty),*) => {
@@ -37,6 +40,36 @@ pub mod lazy_segment_tree {
                 }
                 fn binary_operation(a: &Self::S, b: &Self::S) -> Self::S {
                     std::cmp::max(*a, *b)
+                }
+            }
+            impl Monoid for Min<$ty>
+            {
+                type S = $ty;
+                fn identity() -> Self::S {
+                    Self::S::MAX
+                }
+                fn binary_operation(a: &Self::S, b: &Self::S) -> Self::S {
+                    std::cmp::min(*a, *b)
+                }
+            }
+            impl Monoid for Additive<$ty>
+            {
+                type S = $ty;
+                fn identity() -> Self::S {
+                    0
+                }
+                fn binary_operation(a: &Self::S, b: &Self::S) -> Self::S {
+                    *a + *b
+                }
+            }
+            impl Monoid for Multiplicative<$ty>
+            {
+                type S = $ty;
+                fn identity() -> Self::S {
+                    1
+                }
+                fn binary_operation(a: &Self::S, b: &Self::S) -> Self::S {
+                    *a * *b
                 }
             }
         )*
