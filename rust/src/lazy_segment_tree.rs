@@ -82,7 +82,6 @@ pub mod lazy_segment_tree {
         F: MapMonoid,
     {
         size: usize,
-        height: usize,
         data: Vec<<F::M as Monoid>::S>,
         lazy: Vec<F::F>,
     }
@@ -92,19 +91,12 @@ pub mod lazy_segment_tree {
     {
         pub fn new(n: usize) -> Self {
             let mut size = 1;
-            let mut height = 0;
             while size < n {
                 size <<= 1;
-                height += 1;
             }
             let data = vec![F::identity_element(); 2 * size];
             let lazy = vec![F::identity_map(); 2 * size];
-            LazySegMentTree {
-                size,
-                height,
-                data,
-                lazy,
-            }
+            LazySegMentTree { size, data, lazy }
         }
 
         pub fn set(&mut self, p: usize, x: <F::M as Monoid>::S) {
