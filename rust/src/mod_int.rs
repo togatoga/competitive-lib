@@ -30,6 +30,24 @@ pub mod mod_int {
     #[warn(unused_macros)]
     macro_rules! mod_int_impl {
         ($($t:ty)*) => ($(
+            impl <M: Modulus> ModInt<$t, M> {
+                pub fn new(x: $t) -> Self {
+                    ModInt{val: x % M::VALUE as $t, phantom: PhantomData}
+                }
+                pub fn pow(self, e: usize) -> ModInt<$t, M> {
+                    let mut result = ModInt::<$t, M>::new(1);
+                    let mut cur = self;
+                    let mut e = e;
+                    while e > 0 {
+                        if e & 1 == 1 {
+                            result *= cur;
+                        }
+                        cur *= cur;
+                        e >>= 1;
+                    }
+                    result
+                }
+            }
             impl <M: Modulus> Add<ModInt<$t, M>> for ModInt<$t, M> {
                 type Output = ModInt<$t, M>;
                 fn add(self, other: ModInt<$t, M>) -> ModInt<$t, M> {
@@ -39,10 +57,7 @@ pub mod mod_int {
             impl <M: Modulus> Add<$t> for ModInt<$t, M> {
                 type Output = ModInt<$t, M>;
                 fn add(self, rhs: $t) -> ModInt<$t, M> {
-                    let mut val = rhs + self.val;
-                    if val >= M::VALUE as $t {
-                        val = val - M::VALUE as $t;
-                    }
+                    let val = (rhs + self.val) % M::VALUE as $t;
                     ModInt {val, phantom: PhantomData}
                 }
             }
@@ -56,7 +71,7 @@ pub mod mod_int {
                 type Output = ModInt<$t, M>;
                 fn sub(self, rhs: $t) -> ModInt<$t, M> {
                     let rhs = if rhs >= M::VALUE as $t { rhs % M::VALUE as $t} else { rhs };
-                    let val = if self.val < rhs { self.val + M::VALUE as $t} else { self.val };
+                    let val = if self.val < rhs { self.val + M::VALUE as $t - rhs} else { self.val - rhs};
                     ModInt {val, phantom: PhantomData}
                 }
             }
@@ -131,24 +146,7 @@ pub mod mod_int {
                     *self = *self * rhs;
                 }
             }
-            impl <M: Modulus> ModInt<$t, M> {
-                pub fn new(x: $t) -> Self {
-                    ModInt{val: x % M::VALUE as $t, phantom: PhantomData}
-                }
-                pub fn pow(self, e: usize) -> ModInt<$t, M> {
-                    let mut result = ModInt::<$t, M>::new(1);
-                    let mut cur = self;
-                    let mut e = e;
-                    while e > 0 {
-                        if e & 1 == 1 {
-                            result *= cur;
-                        }
-                        cur *= cur;
-                        e >>= 1;
-                    }
-                    result
-                }
-            }
+
             )*)
     }
     mod_int_impl!(usize i32 i64 u32 u64);
@@ -167,7 +165,14 @@ mod test {
 
         assert_eq!(c.val, 0);
     }
+    #[test]
+    fn test_sub() {
+        let a = ModInt::new(10);
+        let b = ModInt::new(100);
 
+        assert_eq!((b - a).val, 90);
+        assert_eq!((a - b).val, 1_000_000_007 - 90);
+    }
     #[test]
     fn test_mul() {
         let a = ModInt::new(1000);
