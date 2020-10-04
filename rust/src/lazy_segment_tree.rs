@@ -99,16 +99,19 @@ pub mod lazy_segment_tree {
             LazySegMentTree { size, data, lazy }
         }
 
+        //0-index
         pub fn set(&mut self, p: usize, x: <F::M as Monoid>::S) {
             self.data[p + self.size] = x;
         }
 
+        //Must call this function just after finishing constructing the segment tree
         pub fn build(&mut self) {
             for k in (1..self.size).rev() {
                 self.data[k] = F::binary_operation(&self.data[2 * k], &self.data[2 * k + 1]);
             }
         }
 
+        //propagate lazy values to childs
         fn eval(&mut self, k: usize) {
             if self.lazy[k] == F::identity_map() {
                 return;
@@ -120,19 +123,25 @@ pub mod lazy_segment_tree {
             self.data[k] = F::mapping(&self.lazy[k], &self.data[k]);
             self.lazy[k] = F::identity_map();
         }
-        fn update(&mut self, a: usize, b: usize, f: F::F, k: usize, l: usize, r: usize) {
+
+        fn apply_internal(&mut self, a: usize, b: usize, f: F::F, k: usize, l: usize, r: usize) {
             self.eval(k);
             if a <= l && r <= b {
                 self.lazy[k] = F::composition(&self.lazy[k], &f);
                 self.eval(k);
             } else if a < r && l < b {
-                self.update(a, b, f.clone(), 2 * k, l, (l + r) >> 1);
-                self.update(a, b, f.clone(), 2 * k + 1, (l + r) >> 1, r);
+                self.apply_internal(a, b, f.clone(), 2 * k, l, (l + r) >> 1);
+                self.apply_internal(a, b, f.clone(), 2 * k + 1, (l + r) >> 1, r);
                 self.data[k] = F::binary_operation(&self.data[2 * k], &self.data[2 * k + 1]);
             }
         }
+
+        //0-index [a, b)
+        //a=f(a),a+1=f(a+1),...,b-1=f(b-1)
+        //e.g f(x) = x + 1
+        //a=a+1,a+1=a+2,...,b-1=b
         pub fn apply(&mut self, a: usize, b: usize, f: F::F) {
-            self.update(a, b, f, 1, 0, self.size);
+            self.apply_internal(a, b, f, 1, 0, self.size);
         }
 
         fn get_internal(
@@ -155,6 +164,10 @@ pub mod lazy_segment_tree {
                 F::identity_element()
             }
         }
+
+        //0-index [a, b)
+        //g(a.a+1...b-1)
+        //e.g g(x, y) = min(x, y)
         pub fn get(&mut self, a: usize, b: usize) -> <F::M as Monoid>::S {
             self.get_internal(a, b, 1, 0, self.size)
         }
@@ -164,6 +177,7 @@ pub mod lazy_segment_tree {
 #[cfg(test)]
 mod tests {
     use super::lazy_segment_tree::*;
+    use rand::{thread_rng, Rng};
     struct MaxAdd;
     impl MapMonoid for MaxAdd {
         type M = Max<i32>;
@@ -184,14 +198,29 @@ mod tests {
 
     #[test]
     fn test_max_add() {
-        let base: Vec<i32> = vec![3, 1, 4, 1, 5, 9, 2, 6, 5, 10];
-        let n = base.len();
+        let mut rng = thread_rng();
+        let mut seq: Vec<i32> = (0..1000).map(|_| rng.gen_range(0, 1000)).collect();
+        let n = seq.len();
         let mut seg: LazySegMentTree<MaxAdd> = LazySegMentTree::new(n);
-        for (idx, x) in base.iter().enumerate() {
-            seg.set(idx, *x);
+        for (i, x) in seq.iter().enumerate() {
+            seg.set(i, *x);
         }
         seg.build();
-        seg.apply(0, n, 100);
-        assert_eq!(seg.get(0, 6), 1145154);
+
+        (0..100).for_each(|_| {
+            let left = rng.gen_range(0, n);
+            let right = rng.gen_range(left, n) + 1;
+            let value = rng.gen_range(0, 100);
+            for i in left..right {
+                seq[i] += value;
+            }
+            let seq_max = *seq.iter().skip(left).take(right - left).max().unwrap();
+            seg.apply(left, right, value);
+            let seg_max = seg.get(left, right);
+            for i in left..right {
+                assert_eq!(seg.get(i, i + 1), seq[i]);
+            }
+            assert_eq!(seq_max, seg_max);
+        });
     }
 }
