@@ -36,7 +36,7 @@ pub mod lazy_segment_tree {
             {
                 type S = $ty;
                 fn identity() -> Self::S {
-                    Self::S::MIN
+                    Self::S::min_value()
                 }
                 fn binary_operation(a: &Self::S, b: &Self::S) -> Self::S {
                     std::cmp::max(*a, *b)
@@ -46,7 +46,7 @@ pub mod lazy_segment_tree {
             {
                 type S = $ty;
                 fn identity() -> Self::S {
-                    Self::S::MAX
+                    Self::S::max_value()
                 }
                 fn binary_operation(a: &Self::S, b: &Self::S) -> Self::S {
                     std::cmp::min(*a, *b)
@@ -117,8 +117,8 @@ pub mod lazy_segment_tree {
                 return;
             }
             if k < self.size {
-                self.lazy[2 * k] = F::composition(&self.lazy[2 * k], &self.lazy[k]);
-                self.lazy[2 * k + 1] = F::composition(&self.lazy[2 * k + 1], &self.lazy[k]);
+                self.lazy[2 * k] = F::composition(&self.lazy[k], &self.lazy[2 * k]);
+                self.lazy[2 * k + 1] = F::composition(&self.lazy[k], &self.lazy[2 * k + 1]);
             }
             self.data[k] = F::mapping(&self.lazy[k], &self.data[k]);
             self.lazy[k] = F::identity_map();
@@ -127,7 +127,7 @@ pub mod lazy_segment_tree {
         fn apply_internal(&mut self, a: usize, b: usize, f: F::F, k: usize, l: usize, r: usize) {
             self.eval(k);
             if a <= l && r <= b {
-                self.lazy[k] = F::composition(&self.lazy[k], &f);
+                self.lazy[k] = F::composition(&f, &self.lazy[k]);
                 self.eval(k);
             } else if a < r && l < b {
                 self.apply_internal(a, b, f.clone(), 2 * k, l, (l + r) >> 1);
@@ -170,6 +170,21 @@ pub mod lazy_segment_tree {
         //e.g g(x, y) = min(x, y)
         pub fn get(&mut self, a: usize, b: usize) -> <F::M as Monoid>::S {
             self.get_internal(a, b, 1, 0, self.size)
+        }
+    }
+    use std::fmt::{Debug, Error, Formatter, Write};
+
+    impl<F> Debug for LazySegMentTree<F>
+    where
+        F: MapMonoid,
+        F::F: Debug,
+        <F::M as Monoid>::S: Debug,
+    {
+        fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+            for i in 0..self.size {
+                f.write_fmt(format_args!("{:?}\t", self.data[self.size + i]))?;
+            }
+            Ok(())
         }
     }
 }
