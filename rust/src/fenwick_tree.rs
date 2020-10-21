@@ -7,7 +7,7 @@ pub mod fenwick_tree {
     }
 
     impl<T: Copy + Clone + AddAssign + Sub<Output = T>> FenwickTree<T> {
-        pub fn new(n: usize, init_value: &T) -> FenwickTree<T> {
+        pub fn new(n: usize, init_value: T) -> FenwickTree<T> {
             FenwickTree {
                 values: vec![init_value.clone(); n + 1],
                 init_value: init_value.clone(),
@@ -44,7 +44,7 @@ mod test {
     #[test]
     fn random_array() {
         let n = 1000;
-        let mut bit = FenwickTree::new(n, &0);
+        let mut bit = FenwickTree::new(n, 0);
         let mut v = vec![0; n];
         for _ in 0..10000 {
             let value = thread_rng().gen_range(0, 1000);
