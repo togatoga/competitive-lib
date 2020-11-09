@@ -172,7 +172,7 @@ pub mod lazy_segment_tree {
             self.get_internal(a, b, 1, 0, self.size)
         }
     }
-    use std::fmt::{Debug, Error, Formatter, Write};
+    use std::fmt::{Debug, Error, Formatter};
 
     impl<F> Debug for LazySegMentTree<F>
     where
