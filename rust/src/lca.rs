@@ -1,8 +1,8 @@
 //Lowest common ancestor
 pub mod lca {
     pub struct Lca {
-        parents: Vec<Vec<Option<usize>>>, //parents[k][u]: A parent has 2^k distance from u node
-        dists: Vec<usize>,                //distance from the root
+        pub parents: Vec<Vec<Option<usize>>>, //parents[k][u]: A parent has 2^k distance from u node
+        pub dists: Vec<usize>,                //distance from the root
     }
 
     impl Lca {
