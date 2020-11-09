@@ -90,5 +90,6 @@ mod tests {
         assert_eq!(lca.query(7, 6), 6);
         assert_eq!(lca.query(0, 1), 0);
         assert_eq!(lca.query(5, 8), 4);
+        assert_eq!(lca.query(1, 1), 1);
     }
 }
