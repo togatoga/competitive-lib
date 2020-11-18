@@ -16,10 +16,13 @@ impl UnionFind {
         let y_root = self.root(y);
         //different set
         if x_root != y_root {
+            //size1 and size are negative
+            //-1 -2
             let size1 = self.parent[x_root];
             let size2 = self.parent[y_root];
             //merge smaller one for bigger one
-            if size1 >= size2 {
+            //e.g -2 <= -1
+            if size1 <= size2 {
                 self.parent[x_root] += size2;
                 //new parent
                 self.parent[y_root] = x_root as i32;
