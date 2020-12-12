@@ -108,3 +108,20 @@ impl<R: std::io::Read> Scanner<R> {
         self.read::<String>().chars().collect()
     }
 }
+
+// utility macros
+#[allow(unused_macros)]
+macro_rules! max {
+    ($x:expr) => ($x);
+    ($x:expr, $($y:expr),+) => {
+        std::cmp::max($x, max!($($y),+))
+    }
+}
+
+#[allow(unused_macros)]
+macro_rules! min {
+    ($x:expr) => ($x);
+    ($x:expr, $($y:expr),+) => {
+        std:::cmp::min($x, max!($($y),+))
+    }
+}
