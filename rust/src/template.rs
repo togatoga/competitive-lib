@@ -110,6 +110,7 @@ impl<R: std::io::Read> Scanner<R> {
 }
 
 // utility macros
+#[macro_export]
 #[allow(unused_macros)]
 macro_rules! max {
     ($x:expr) => ($x);
@@ -118,10 +119,11 @@ macro_rules! max {
     }
 }
 
+#[macro_export]
 #[allow(unused_macros)]
 macro_rules! min {
     ($x:expr) => ($x);
     ($x:expr, $($y:expr),+) => {
-        std:::cmp::min($x, max!($($y),+))
+        std:::cmp::min($x, min!($($y),+))
     }
 }
