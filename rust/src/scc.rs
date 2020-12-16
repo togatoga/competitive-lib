@@ -1,3 +1,4 @@
+//Verified: https://atcoder.jp/contests/practice2/submissions/18811349
 //Kosaraju’s Algorithm
 //O(|V| + |E|)
 pub mod scc {
