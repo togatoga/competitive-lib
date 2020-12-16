@@ -123,4 +123,19 @@ mod tests {
         assert_eq!(groups[5], vec![1]);
         assert_eq!(groups[6], vec![0, 3]);
     }
+
+    #[test]
+    fn solve_alpc_g_sample1() {
+        // https://atcoder.jp/contests/practice2/tasks/practice2_g
+        let n: usize = 6;
+        let edges = vec![(1, 4), (5, 2), (3, 0), (5, 5), (4, 1), (0, 3), (4, 2)];
+
+        let mut graph = SccGraph::new(n);
+        for (u, v) in edges.into_iter() {
+            graph.add_edge(u, v);
+        }
+
+        let scc = graph.scc();
+        assert_eq!(scc, vec![vec![5], vec![1, 4], vec![2], vec![0, 3]]);
+    }
 }
