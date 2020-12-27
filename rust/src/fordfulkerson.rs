@@ -42,18 +42,37 @@ pub mod fordfulkerson {
             self.list[u][idx].cap -= f;
 
             //reverse edgeGraphe::new(from, to, to_rev, cap));
+            let e = &self.list[u][idx].clone();
+            self.rev_edge_mut(e).cap += f;
+        }
+
+        pub fn add_edge(&mut self, from: usize, to: usize, cap: i32) {
+            let from_rev: usize = self.list[from].len();
+            let to_rev: usize = self.list[to].len();
+            self.list[from].push(Edge::new(from, to, to_rev, cap));
             self.list[to].push(Edge::new(to, from, from_rev, 0));
         }
     }
 
-    struct FordFulkerson {
+    pub struct FordFulkerson {
         seen: Vec<bool>,
-        pub graph: Graph,
+        graph: Graph,
     }
 
     impl FordFulkerson {
+        pub fn new(n: usize) -> FordFulkerson {
+            FordFulkerson {
+                seen: vec![false; n],
+                graph: Graph::new(n),
+            }
+        }
+
+        pub fn add_edge(&mut self, from: usize, to: usize, cap: i32) {
+            self.graph.add_edge(from, to, cap);
+        }
+
         // Calculate the maximum flow between s and t(s-t)
-        fn max_flow(&mut self, s: usize, t: usize) -> i32 {
+        pub fn max_flow(&mut self, s: usize, t: usize) -> i32 {
             let mut result = 0;
             loop {
                 self.seen.iter_mut().for_each(|x| *x = false);
@@ -73,11 +92,14 @@ pub mod fordfulkerson {
             self.seen[v] = true;
             let m: usize = self.graph.list[v].len();
             for i in 0..m {
-                let e = g.list[v][i].clone();
+                let e = self.graph.list[v][i].clone();
+                if self.seen[e.to] {
+                    continue;
+                }
                 if e.cap == 0 {
                     continue;
                 }
-                let flow = self.dfs(g, e.to, t, std::cmp::min(f, e.cap));
+                let flow = self.dfs(e.to, t, std::cmp::min(f, e.cap));
                 if let Some(flow) = flow {
                     self.graph.run_flow(e.from, i, flow);
                     return Some(flow);
@@ -85,5 +107,24 @@ pub mod fordfulkerson {
             }
             None
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::fordfulkerson;
+
+    #[test]
+    fn test_max_flow() {
+        //http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=GRL_6_A&lang=jp
+        let mut ff = fordfulkerson::FordFulkerson::new(4);
+        ff.add_edge(0, 1, 2);
+        ff.add_edge(0, 2, 1);
+        ff.add_edge(1, 2, 1);
+        ff.add_edge(1, 3, 1);
+        ff.add_edge(2, 3, 2);
+
+        let max_flow = ff.max_flow(0, 3);
+        assert_eq!(max_flow, 3);
     }
 }
