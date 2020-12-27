@@ -1,6 +1,7 @@
 //MaxFlow
 //O(F|E|)
 //0-index
+//verified@http://judge.u-aizu.ac.jp/onlinejudge/review.jsp?rid=5091370#1
 pub mod fordfulkerson {
     #[derive(Clone)]
     struct Edge {
