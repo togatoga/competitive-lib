@@ -3,16 +3,17 @@
 //0-index
 //verified@http://judge.u-aizu.ac.jp/onlinejudge/review.jsp?rid=5091370#1
 pub mod fordfulkerson {
+    pub type Cost = usize;
     #[derive(Clone)]
     struct Edge {
         from: usize,
         to: usize,
         rev: usize, // An index points an reverse edge (to, from).
-        cap: i32,
+        cap: i64,
     }
 
     impl Edge {
-        pub fn new(from: usize, to: usize, rev: usize, cap: i32) -> Edge {
+        pub fn new(from: usize, to: usize, rev: usize, cap: i64) -> Edge {
             Edge { from, to, rev, cap }
         }
     }
@@ -39,7 +40,7 @@ pub mod fordfulkerson {
         // run f into an edge(u, v)
         // the capacity of an edge(u, v) decreases f
         // that of a reverse edge(v, u) increases f
-        pub fn run_flow(&mut self, u: usize, idx: usize, f: i32) {
+        pub fn run_flow(&mut self, u: usize, idx: usize, f: i64) {
             self.list[u][idx].cap -= f;
 
             //reverse edgeGraphe::new(from, to, to_rev, cap));
@@ -47,7 +48,7 @@ pub mod fordfulkerson {
             self.rev_edge_mut(e).cap += f;
         }
 
-        pub fn add_edge(&mut self, from: usize, to: usize, cap: i32) {
+        pub fn add_edge(&mut self, from: usize, to: usize, cap: i64) {
             let from_rev: usize = self.list[from].len();
             let to_rev: usize = self.list[to].len();
             self.list[from].push(Edge::new(from, to, to_rev, cap));
@@ -68,16 +69,16 @@ pub mod fordfulkerson {
             }
         }
 
-        pub fn add_edge(&mut self, from: usize, to: usize, cap: i32) {
+        pub fn add_edge(&mut self, from: usize, to: usize, cap: i64) {
             self.graph.add_edge(from, to, cap);
         }
 
         // Calculate the maximum flow between s and t(s-t)
-        pub fn max_flow(&mut self, s: usize, t: usize) -> i32 {
+        pub fn max_flow(&mut self, s: usize, t: usize) -> i64 {
             let mut result = 0;
             loop {
                 self.seen.iter_mut().for_each(|x| *x = false);
-                let flow = self.dfs(s, t, 1 << 30);
+                let flow = self.dfs(s, t, std::i64::MAX);
                 if let Some(flow) = flow {
                     result += flow;
                 } else {
@@ -86,7 +87,7 @@ pub mod fordfulkerson {
             }
             result
         }
-        fn dfs(&mut self, v: usize, t: usize, f: i32) -> Option<i32> {
+        fn dfs(&mut self, v: usize, t: usize, f: i64) -> Option<i64> {
             if v == t {
                 return Some(f);
             }
