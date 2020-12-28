@@ -5,21 +5,37 @@
 pub mod fordfulkerson {
     pub type Cost = usize;
     #[derive(Clone)]
-    struct Edge {
+    pub struct Edge {
         from: usize,
         to: usize,
         rev: usize, // An index points an reverse edge (to, from).
         cap: i64,
+        is_reversed: bool,
     }
 
     impl Edge {
-        pub fn new(from: usize, to: usize, rev: usize, cap: i64) -> Edge {
-            Edge { from, to, rev, cap }
+        pub fn new(from: usize, to: usize, rev: usize, cap: i64, is_reversed: bool) -> Edge {
+            Edge {
+                from,
+                to,
+                rev,
+                cap,
+                is_reversed,
+            }
+        }
+        pub fn from_to(&self) -> (usize, usize) {
+            (self.from, self.to)
+        }
+        pub fn is_reversed(&self) -> bool {
+            self.is_reversed
+        }
+        pub fn cap(&self) -> i64 {
+            self.cap
         }
     }
 
-    struct Graph {
-        list: Vec<Vec<Edge>>,
+    pub struct Graph {
+        pub list: Vec<Vec<Edge>>,
     }
 
     impl Graph {
@@ -51,14 +67,14 @@ pub mod fordfulkerson {
         pub fn add_edge(&mut self, from: usize, to: usize, cap: i64) {
             let from_rev: usize = self.list[from].len();
             let to_rev: usize = self.list[to].len();
-            self.list[from].push(Edge::new(from, to, to_rev, cap));
-            self.list[to].push(Edge::new(to, from, from_rev, 0));
+            self.list[from].push(Edge::new(from, to, to_rev, cap, false));
+            self.list[to].push(Edge::new(to, from, from_rev, 0, true));
         }
     }
 
     pub struct FordFulkerson {
         seen: Vec<bool>,
-        graph: Graph,
+        pub graph: Graph,
     }
 
     impl FordFulkerson {
