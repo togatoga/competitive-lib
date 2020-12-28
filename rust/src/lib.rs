@@ -2,6 +2,7 @@ pub mod binary_search;
 pub mod fenwick_tree;
 pub mod fordfulkerson;
 pub mod gcd;
+pub mod io;
 pub mod lazy_segment_tree;
 pub mod lca;
 pub mod mod_int;
