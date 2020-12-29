@@ -4,7 +4,7 @@
 pub mod primal_dual {
     pub type Cost = i64;
     pub type Flow = i64;
-    const INF: Cost = 1i64 << 60;
+    const INF: Cost = 1i64 << 50;
     use std::cmp::Reverse;
     use std::collections::BinaryHeap;
     #[derive(Clone)]
