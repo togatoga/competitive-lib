@@ -1,5 +1,6 @@
 pub mod io {
     use std::io::BufWriter;
+    use std::io::Write;
 
     pub struct Writer<W: std::io::Write> {
         writer: std::io::BufWriter<W>,
@@ -11,14 +12,16 @@ pub mod io {
                 writer: BufWriter::new(write),
             }
         }
+        pub fn flush(&mut self) {
+            self.writer.flush().unwrap();
+        }
+
         pub fn write<S: std::string::ToString>(&mut self, s: S) {
-            use std::io::Write;
-            self.writer.write_all(s.to_string().as_bytes()).unwrap();
+            self.writer.write(s.to_string().as_bytes()).unwrap();
         }
         pub fn writeln<S: std::string::ToString>(&mut self, s: S) {
-            use std::io::Write;
             self.write(s);
-            writeln!(self.writer).unwrap();
+            self.write('\n');
         }
     }
 
