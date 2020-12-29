@@ -1,5 +1,6 @@
 //Minimum cost Flow
 //O(FElogV)
+//verified@http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=GRL_6_B
 pub mod primal_dual {
     pub type Cost = i64;
     pub type Flow = i64;
@@ -59,11 +60,10 @@ pub mod primal_dual {
             self.pre_e.iter_mut().for_each(|x| *x = None);
             let mut que = BinaryHeap::new();
             let mut result = 0;
-            eprintln!("{}", INF);
             while f > 0 {
                 self.min_cost.iter_mut().for_each(|x| *x = INF);
                 self.min_cost[s] = 0;
-                
+
                 que.push(Reverse((0, s)));
                 while let Some(p) = que.pop() {
                     let (cost, pos) = p.0;
