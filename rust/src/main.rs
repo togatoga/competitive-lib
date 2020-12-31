@@ -5,10 +5,10 @@ struct Solver {}
 
 impl Solver {
     fn solve(&mut self) {
+        // let stdout = std::io::stdout();
+        // let mut wrt = fastio::Writer::new(stdout.lock());
         let stdin = std::io::stdin();
-        let mut scn = io::Scanner {
-            stdin: stdin.lock(),
-        };
+        let mut scn = fastio::Scanner::new(stdin.lock());
     }
 }
 
@@ -64,67 +64,63 @@ impl Ord for NonNan {
     }
 }
 
-pub mod io {
+pub mod fastio {
+    use std::collections::VecDeque;
     use std::io::BufWriter;
     use std::io::Write;
 
     pub struct Writer<W: std::io::Write> {
         writer: std::io::BufWriter<W>,
+        buffer: VecDeque<Vec<u8>>,
     }
 
     impl<W: std::io::Write> Writer<W> {
         pub fn new(write: W) -> Writer<W> {
             Writer {
                 writer: BufWriter::new(write),
+                buffer: VecDeque::new(),
             }
         }
         pub fn flush(&mut self) {
+            while let Some(p) = self.buffer.pop_front() {
+                self.writer.write(&p).unwrap();
+            }
             self.writer.flush().unwrap();
         }
 
         pub fn write<S: std::string::ToString>(&mut self, s: S) {
-            self.writer.write(s.to_string().as_bytes()).unwrap();
+            self.buffer.push_back(s.to_string().as_bytes().to_vec());
         }
         pub fn writeln<S: std::string::ToString>(&mut self, s: S) {
-            self.write(s);
-            self.write('\n');
+            self.write(s.to_string() + "\n");
         }
     }
 
     pub struct Scanner<R> {
-        pub stdin: R,
+        stdin: R,
+        buffer: VecDeque<String>,
     }
 
-    impl<R: std::io::Read> Scanner<R> {
+    impl<R: std::io::BufRead> Scanner<R> {
+        pub fn new(s: R) -> Scanner<R> {
+            Scanner {
+                stdin: s,
+                buffer: VecDeque::new(),
+            }
+        }
         pub fn read<T: std::str::FromStr>(&mut self) -> T {
-            use std::io::Read;
-            let buf = self
-                .stdin
-                .by_ref()
-                .bytes()
-                .map(|b| b.unwrap())
-                .skip_while(|&b| b == b' ' || b == b'\n' || b == b'\r')
-                .take_while(|&b| b != b' ' && b != b'\n' && b != b'\r')
-                .collect::<Vec<_>>();
-            unsafe { std::str::from_utf8_unchecked(&buf) }
-                .parse()
-                .ok()
-                .expect("Parse error.")
+            while self.buffer.is_empty() {
+                let line = self.read_line();
+                for w in line.split_whitespace() {
+                    self.buffer.push_back(String::from(w));
+                }
+            }
+            self.buffer.pop_front().unwrap().parse::<T>().ok().unwrap()
         }
         pub fn read_line(&mut self) -> String {
-            use std::io::Read;
-            let buf = self
-                .stdin
-                .by_ref()
-                .bytes()
-                .map(|b| b.unwrap())
-                .skip_while(|&b| b == b'\n' || b == b'\r')
-                .take_while(|&b| b != b'\n' && b != b'\r')
-                .collect::<Vec<_>>();
-            unsafe { std::str::from_utf8_unchecked(&buf) }
-                .parse()
-                .ok()
-                .expect("Parse error.")
+            let mut line = String::new();
+            let _ = self.stdin.read_line(&mut line);
+            line
         }
         pub fn vec<T: std::str::FromStr>(&mut self, n: usize) -> Vec<T> {
             (0..n).map(|_| self.read()).collect()
