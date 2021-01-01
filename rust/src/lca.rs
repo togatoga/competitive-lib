@@ -1,3 +1,6 @@
+use cargo_snippet::snippet;
+
+#[snippet]
 //Lowest common ancestor
 pub mod lca {
     pub struct Lca {

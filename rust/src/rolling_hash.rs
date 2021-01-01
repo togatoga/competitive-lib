@@ -1,3 +1,5 @@
+use cargo_snippet::snippet;
+#[snippet]
 pub mod rolling_hash {
     const MASK_SIZE: usize = 2;
     static MOD: [u64; MASK_SIZE] = [999999937u64, 1000000007u64];

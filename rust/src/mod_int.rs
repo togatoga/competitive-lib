@@ -1,3 +1,5 @@
+use cargo_snippet::snippet;
+#[snippet]
 pub mod mod_int {
     use std::marker::PhantomData;
     use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};

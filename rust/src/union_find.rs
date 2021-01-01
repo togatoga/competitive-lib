@@ -1,3 +1,5 @@
+use cargo_snippet::snippet;
+#[snippet]
 pub mod union_find {
     pub struct UnionFind {
         parent: Vec<i32>,

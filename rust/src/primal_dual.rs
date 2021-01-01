@@ -1,3 +1,5 @@
+use cargo_snippet::snippet;
+#[snippet]
 //Minimum cost Flow
 //O(FElogV)
 //verified@http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=GRL_6_B

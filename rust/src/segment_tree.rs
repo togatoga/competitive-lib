@@ -1,3 +1,5 @@
+use cargo_snippet::snippet;
+#[snippet]
 pub mod segment_tree {
     pub struct SegmentTree<T, F> {
         seg: Vec<T>,

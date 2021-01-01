@@ -1,6 +1,6 @@
 #[derive(Default)]
-//NOTE
-//declare variables to reduce the number of parameters for dp and dfs etc.
+/// NOTE
+/// declare variables to reduce the number of parameters for dp and dfs etc.
 struct Solver {}
 
 impl Solver {

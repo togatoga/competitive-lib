@@ -1,53 +1,56 @@
-use std::cmp::Ordering;
-
-pub trait BinarySearch<T> {
-    fn lower_bound(&self, x: &T) -> Option<usize>;
-    fn upper_bound(&self, x: &T) -> Option<usize>;
-}
-
-impl<T: Ord> BinarySearch<T> for [T] {
-    //greater than or equal
-    fn lower_bound(&self, x: &T) -> Option<usize> {
-        let mut left = 0;
-        let mut right = self.len();
-        let mut result = None;
-        while left < right {
-            let med = (left + right) / 2;
-            match self[med].cmp(x) {
-                Ordering::Less => {
-                    left = med + 1;
-                }
-                Ordering::Equal | Ordering::Greater => {
-                    result = Some(med);
-                    right = med;
-                }
-            }
-        }
-        result
+use cargo_snippet::snippet;
+#[snippet(name = "binary_search")]
+pub mod binary_search {
+    use std::cmp::Ordering;
+    pub trait BinarySearch<T> {
+        fn lower_bound(&self, x: &T) -> Option<usize>;
+        fn upper_bound(&self, x: &T) -> Option<usize>;
     }
-    fn upper_bound(&self, x: &T) -> Option<usize> {
-        let mut left = 0;
-        let mut right = self.len();
-        let mut result = None;
-        while left < right {
-            let med = (left + right) / 2;
-            match self[med].cmp(x) {
-                Ordering::Equal | Ordering::Less => {
-                    left = med + 1;
-                }
-                Ordering::Greater => {
-                    result = Some(med);
-                    right = med;
+
+    impl<T: Ord> BinarySearch<T> for [T] {
+        //greater than or equal
+        fn lower_bound(&self, x: &T) -> Option<usize> {
+            let mut left = 0;
+            let mut right = self.len();
+            let mut result = None;
+            while left < right {
+                let med = (left + right) / 2;
+                match self[med].cmp(x) {
+                    Ordering::Less => {
+                        left = med + 1;
+                    }
+                    Ordering::Equal | Ordering::Greater => {
+                        result = Some(med);
+                        right = med;
+                    }
                 }
             }
+            result
         }
-        result
+        fn upper_bound(&self, x: &T) -> Option<usize> {
+            let mut left = 0;
+            let mut right = self.len();
+            let mut result = None;
+            while left < right {
+                let med = (left + right) / 2;
+                match self[med].cmp(x) {
+                    Ordering::Equal | Ordering::Less => {
+                        left = med + 1;
+                    }
+                    Ordering::Greater => {
+                        result = Some(med);
+                        right = med;
+                    }
+                }
+            }
+            result
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::binary_search::*;
     use rand::{thread_rng, Rng};
     #[test]
     fn test_binary_search() {

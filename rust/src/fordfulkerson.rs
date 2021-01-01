@@ -1,3 +1,5 @@
+use cargo_snippet::snippet;
+#[snippet]
 //MaxFlow
 //O(F|E|)
 //0-index

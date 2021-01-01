@@ -1,3 +1,5 @@
+use cargo_snippet::snippet;
+#[snippet]
 pub mod fenwick_tree {
     //Binary Indexed Tree
     use std::ops::*;

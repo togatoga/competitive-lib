@@ -1,7 +1,9 @@
-//Verified: https://atcoder.jp/contests/practice2/submissions/18811349
-//Kosaraju’s Algorithm
-//O(|V| + |E|)
+use cargo_snippet::snippet;
+#[snippet]
 pub mod scc {
+    //Verified: https://atcoder.jp/contests/practice2/submissions/18811349
+    //Kosaraju’s Algorithm
+    //O(|V| + |E|)
     pub struct SccGraph {
         n: usize,
         graphs: Vec<Vec<usize>>,     // graphs 0 -> 1

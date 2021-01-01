@@ -1,3 +1,5 @@
+use cargo_snippet::snippet;
+#[snippet]
 pub mod timer {
     use std::time::{Duration, Instant};
     pub struct Timer {

@@ -1,3 +1,5 @@
+use cargo_snippet::snippet;
+#[snippet]
 pub mod lazy_segment_tree {
     pub trait Monoid {
         type S: Clone;
