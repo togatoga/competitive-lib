@@ -21,10 +21,7 @@ pub mod rolling_hash {
                     hash[i][j + 1] = ((hash[i][j] + (x + BASE[i])) * BASE[i]) % MOD[i];
                 }
             }
-            RollingHash {
-                hash,
-                pow,
-            }
+            RollingHash { hash, pow }
         }
 
         //[l, r)
