@@ -9,7 +9,7 @@ pub mod lca {
     }
 
     impl Lca {
-        pub fn new(root: usize, n: usize, edges: &Vec<Vec<usize>>) -> Lca {
+        pub fn new(root: usize, n: usize, edges: &[Vec<usize>]) -> Lca {
             let mut k = 1;
             while (1 << k) < n {
                 k *= 2;
@@ -30,7 +30,7 @@ pub mod lca {
             lca
         }
 
-        fn dfs(&mut self, pos: usize, parent: Option<usize>, dist: usize, edges: &Vec<Vec<usize>>) {
+        fn dfs(&mut self, pos: usize, parent: Option<usize>, dist: usize, edges: &[Vec<usize>]) {
             self.parents[0][pos] = parent;
             self.dists[pos] = dist;
 
@@ -60,7 +60,7 @@ pub mod lca {
                 return u;
             }
 
-            for i in (0..=k - 1).rev() {
+            for i in (0..k).rev() {
                 if self.parents[i][u] != self.parents[i][v] {
                     u = self.parents[i][u].unwrap();
                     v = self.parents[i][v].unwrap();

@@ -16,14 +16,14 @@ pub mod rolling_hash {
             let mut pow: Vec<Vec<u64>> = vec![vec![0u64; n + 1]; MASK_SIZE];
             for i in 0..MASK_SIZE {
                 pow[i][0] = 1;
-                for j in 0..n {
+                for (j, x) in s.iter().enumerate() {
                     pow[i][j + 1] = pow[i][j] * BASE[i] % MOD[i];
-                    hash[i][j + 1] = ((hash[i][j] + (s[j] + BASE[i])) * BASE[i]) % MOD[i];
+                    hash[i][j + 1] = ((hash[i][j] + (x + BASE[i])) * BASE[i]) % MOD[i];
                 }
             }
             RollingHash {
-                hash: hash,
-                pow: pow,
+                hash,
+                pow,
             }
         }
 

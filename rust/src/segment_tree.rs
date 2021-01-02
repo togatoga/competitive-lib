@@ -16,8 +16,8 @@ pub mod segment_tree {
             SegmentTree {
                 seg: vec![init_value; 2 * m],
                 n: m,
-                f: f,
-                init_value: init_value,
+                f,
+                init_value,
             }
         }
         pub fn update(&mut self, k: usize, value: T) {

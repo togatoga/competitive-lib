@@ -11,8 +11,8 @@ pub mod fenwick_tree {
     impl<T: Copy + Clone + AddAssign + Sub<Output = T>> FenwickTree<T> {
         pub fn new(n: usize, init_value: T) -> FenwickTree<T> {
             FenwickTree {
-                values: vec![init_value.clone(); n + 1],
-                init_value: init_value.clone(),
+                values: vec![init_value; n + 1],
+                init_value,
             }
         }
         //[l, r)

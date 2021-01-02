@@ -133,7 +133,7 @@ pub mod lazy_segment_tree {
                 self.eval(k);
             } else if a < r && l < b {
                 self.apply_internal(a, b, f.clone(), 2 * k, l, (l + r) >> 1);
-                self.apply_internal(a, b, f.clone(), 2 * k + 1, (l + r) >> 1, r);
+                self.apply_internal(a, b, f, 2 * k + 1, (l + r) >> 1, r);
                 self.data[k] = F::binary_operation(&self.data[2 * k], &self.data[2 * k + 1]);
             }
         }

@@ -21,9 +21,9 @@ pub mod mod_util {
                 inv_fact[i] = ModUtil::mod_pow(fact[i], module - 2, module);
             }
             ModUtil {
-                fact: fact,
-                inv_fact: inv_fact,
-                module: module,
+                fact,
+                inv_fact,
+                module,
             }
         }
 
