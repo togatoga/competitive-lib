@@ -80,8 +80,6 @@ pub mod gcd {
 
 #[cfg(test)]
 mod tests {
-    use crate::lazy_segment_tree::lazy_segment_tree;
-
     use super::gcd::*;
     #[test]
     fn test_gcd() {

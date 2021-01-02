@@ -118,8 +118,6 @@ pub mod primal_dual {
 
 #[cfg(test)]
 mod tests {
-    use std::cmp::min;
-
     use primal_dual::Flow;
 
     use super::primal_dual;
@@ -127,7 +125,6 @@ mod tests {
     #[test]
     fn test_min_cost_flow() {
         let n: usize = 4;
-        let m: usize = 5;
         let f: Flow = 2;
         let mut min_cost_flow = primal_dual::PrimalDual::new(n);
         min_cost_flow.add_edge(0, 1, 2, 1);
