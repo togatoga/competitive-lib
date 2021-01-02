@@ -1,3 +1,5 @@
+use cargo_snippet::snippet;
+#[snippet]
 pub mod fastio {
     use std::collections::VecDeque;
     use std::io::BufWriter;

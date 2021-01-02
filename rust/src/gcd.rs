@@ -1,3 +1,5 @@
+use cargo_snippet::snippet;
+#[snippet]
 pub mod gcd {
     pub trait Gcd {
         type Output;
