@@ -16,7 +16,7 @@ pub mod macros {
     macro_rules! min {
     ($x:expr) => ($x);
     ($x:expr, $($y:expr),+) => {
-        std:::cmp::min($x, min!($($y),+))
+        std::cmp::min($x, min!($($y),+))
     }
 }
 }
