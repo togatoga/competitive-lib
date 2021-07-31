@@ -3,18 +3,17 @@ use cargo_snippet::snippet;
 /// MaxFlow O(N^2m)
 /// BipartiteMatching O(mn^(1/2))
 /// verified@https://judge.yosupo.jp/problem/bipartitematching
+/// verified@https://atcoder.jp/contests/typical90/submissions/24637258
 pub mod dinic {
     const INF: i64 = 1i64 << 60;
     use std::collections::VecDeque;
-
     #[derive(Clone)]
     pub struct Edge {
         to: usize,
-        rev: usize, // An index points an reverse edge
+        rev: usize,
         cap: i64,
         is_reversed: bool,
     }
-
     impl Edge {
         pub fn new(to: usize, rev: usize, cap: i64, is_reversed: bool) -> Edge {
             Edge {
@@ -28,7 +27,6 @@ pub mod dinic {
         pub fn to(&self) -> usize {
             self.to
         }
-
         pub fn is_reversed(&self) -> bool {
             self.is_reversed
         }
@@ -42,7 +40,6 @@ pub mod dinic {
         graph_indices: Vec<usize>,
         deque: VecDeque<usize>,
     }
-
     impl Dinic {
         pub fn new(n: usize) -> Dinic {
             Dinic {
@@ -68,7 +65,6 @@ pub mod dinic {
                 cap: 0,
             });
         }
-
         fn bfs(&mut self, s: usize) {
             self.level.iter_mut().for_each(|x| *x = -1);
             self.level[s] = 0;
@@ -114,7 +110,6 @@ pub mod dinic {
             loop {
                 self.bfs(s);
                 if self.level[t] < 0 {
-                    // no route
                     return flow;
                 }
                 self.graph_indices.iter_mut().for_each(|x| *x = 0);
@@ -126,6 +121,55 @@ pub mod dinic {
                     flow += f;
                 }
             }
+        }
+    }
+
+    /// BipartiteMatching O(mn^(1/2))
+    pub struct BipartiteMatching {
+        dinic: Dinic,
+        n1: usize,
+        #[allow(dead_code)]
+        n2: usize,
+        source: usize,
+        target: usize,
+    }
+
+    impl BipartiteMatching {
+        pub fn new(n1: usize, n2: usize) -> BipartiteMatching {
+            let source = n1 + n2;
+            let target = source + 1;
+            let mut dinic = Dinic::new(n1 + n2 + 2);
+            for i in 0..n1 {
+                dinic.add_edge(source, i, 1);
+            }
+            for i in 0..n2 {
+                dinic.add_edge(n1 + i, target, 1);
+            }
+            BipartiteMatching {
+                dinic,
+                n1,
+                n2,
+                source,
+                target,
+            }
+        }
+
+        pub fn add_edge(&mut self, x1: usize, x2: usize) {
+            assert!(x1 < self.n1 && x2 < self.n2);
+            assert!(self.n1 + x2 < self.source);
+            self.dinic.add_edge(x1, self.n1 + x2, 1);
+        }
+
+        pub fn max_match(&mut self) -> Vec<(usize, usize)> {
+            let mut results = vec![];
+            self.dinic.max_flow(self.source, self.target);
+            for i in 0..self.n1 {
+                self.dinic.graph[i]
+                    .iter()
+                    .filter(|e| e.to() < self.source && e.cap() == 0)
+                    .for_each(|e| results.push((i, e.to() - self.n1)));
+            }
+            results
         }
     }
 }
