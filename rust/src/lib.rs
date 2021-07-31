@@ -1,4 +1,5 @@
 pub mod binary_search;
+pub mod dinic;
 pub mod fastio;
 pub mod fenwick_tree;
 pub mod fordfulkerson;
