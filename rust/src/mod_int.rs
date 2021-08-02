@@ -1,5 +1,8 @@
 use cargo_snippet::snippet;
 #[snippet]
+/// Modular Integer
+/// NOTE
+/// If a modular isn't prime, you can't div.
 pub mod mod_int {
     use std::marker::PhantomData;
     use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
@@ -20,7 +23,7 @@ pub mod mod_int {
         const VALUE: u32 = 998244353;
     }
 
-    #[derive(Clone, Copy, Debug)]
+    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
     pub struct ModInt<
         T: Copy + Clone + Add + AddAssign + Mul + MulAssign + Sub + SubAssign,
         M: Modulus,
@@ -28,7 +31,7 @@ pub mod mod_int {
         pub val: T,
         phantom: std::marker::PhantomData<fn() -> M>,
     }
-
+    /// Implementation macros
     #[warn(unused_macros)]
     macro_rules! mod_int_impl {
         ($($t:ty)*) => ($(
@@ -148,12 +151,15 @@ pub mod mod_int {
                     *self = *self * rhs;
                 }
             }
-
+            impl <M: Modulus> Default for ModInt<$t, M> {
+                fn default() -> ModInt<$t, M> {
+                    ModInt{val: 0, phantom: PhantomData}
+                }
+            }
             )*)
     }
     mod_int_impl!(usize i32 i64 u32 u64);
 }
-
 #[cfg(test)]
 mod test {
     use super::mod_int;
