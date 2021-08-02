@@ -1,7 +1,9 @@
 pub mod binary_search;
+pub mod dinic;
 pub mod fastio;
 pub mod fenwick_tree;
 pub mod fordfulkerson;
+pub mod gaussian_elimination;
 pub mod gcd;
 pub mod karatsuba;
 pub mod lazy_segment_tree;

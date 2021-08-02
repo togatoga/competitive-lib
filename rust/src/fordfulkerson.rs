@@ -1,11 +1,10 @@
 use cargo_snippet::snippet;
 #[snippet]
-//MaxFlow
-//O(F|E|)
-//0-index
-//verified@http://judge.u-aizu.ac.jp/onlinejudge/review.jsp?rid=5091370#1
+/// MaxFlow
+/// O(F|E|)
+/// 0-index
+/// verified@http://judge.u-aizu.ac.jp/onlinejudge/review.jsp?rid=5091370#1
 pub mod fordfulkerson {
-    pub type Cost = usize;
     #[derive(Clone)]
     pub struct Edge {
         from: usize,
