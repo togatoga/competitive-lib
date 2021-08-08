@@ -14,6 +14,7 @@ pub mod mod_int;
 pub mod mod_util;
 pub mod primal_dual;
 pub mod rolling_hash;
+pub mod rustc_hash;
 pub mod scc;
 pub mod segment_tree;
 pub mod timer;
