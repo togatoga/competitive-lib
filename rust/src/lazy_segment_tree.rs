@@ -342,4 +342,61 @@ mod tests {
             }
         });
     }
+
+    use super::super::mod_int::mod_int;
+    type ModInt = mod_int::ModInt<i32, mod_int::Mod1000000007>;
+    struct AdditiveMulMod;
+    impl Monoid for Additive<ModInt> {
+        type S = ModInt;
+        fn identity() -> Self::S {
+            ModInt::new(0)
+        }
+        fn binary_operation(a: &Self::S, b: &Self::S) -> Self::S {
+            *a + *b
+        }
+    }
+    impl MapMonoid for AdditiveMulMod {
+        type M = Additive<ModInt>;
+        type F = i32;
+        fn identity_map() -> Self::F {
+            1
+        }
+        fn mapping(&f: &Self::F, &x: &ModInt) -> ModInt {
+            x * f
+        }
+        fn composition(f: &Self::F, g: &Self::F) -> Self::F {
+            f * g
+        }
+    }
+
+    #[test]
+    fn test_additive_mul_mod() {
+        let mut rng = thread_rng();
+        let mut seq: Vec<ModInt> = (0..1000)
+            .map(|_| rng.gen_range(0, 1000))
+            .map(|x| ModInt::new(x))
+            .collect();
+        let n = seq.len();
+        let mut seg: LazySegMentTree<AdditiveMulMod> = LazySegMentTree::from(seq.clone());
+
+        (0..100).for_each(|_| {
+            let left = rng.gen_range(0, n);
+            let right = rng.gen_range(left, n) + 1;
+            let value = rng.gen_range(0, 100);
+            for i in left..right {
+                seq[i] *= value;
+            }
+            let seq_total_mod = seq
+                .iter()
+                .skip(left)
+                .take(right - left)
+                .fold(ModInt::new(0), |x, y| x + *y);
+            seg.apply_range(left, right, value);
+            let seg_total_mod = seg.prod(left, right);
+            assert_eq!(seq_total_mod.val, seg_total_mod.val);
+            for i in left..right {
+                assert_eq!(seg.prod(i, i + 1).val, seq[i].val);
+            }
+        });
+    }
 }
