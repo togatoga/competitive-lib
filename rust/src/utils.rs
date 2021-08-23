@@ -15,26 +15,10 @@ pub mod utils {
     pub fn try_adj(y: usize, x: usize, dir: usize, h: usize, w: usize) -> Option<(usize, usize)> {
         let ny = y as isize + DYX[dir].0;
         let nx = x as isize + DYX[dir].1;
-        if ny >= 0 && nx >= 0 {
-            let ny = ny as usize;
-            let nx = nx as usize;
-            if ny < h && nx < w {
-                Some((ny, nx))
-            } else {
-                None
-            }
+        if ny >= 0 && nx >= 0 && ny < h as isize && nx < w as isize {
+            Some((ny as usize, nx as usize))
         } else {
             None
-        }
-    }
-
-    #[allow(dead_code)]
-    #[derive(PartialEq, PartialOrd)]
-    pub struct NonNan(pub f64);
-    impl Eq for NonNan {}
-    impl Ord for NonNan {
-        fn cmp(&self, other: &NonNan) -> std::cmp::Ordering {
-            self.0.partial_cmp(&other.0).unwrap()
         }
     }
 }

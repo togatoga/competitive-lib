@@ -1,6 +1,16 @@
 use cargo_snippet::snippet;
 use rust::fastio::fastio;
 
+#[allow(dead_code)]
+#[derive(PartialEq, PartialOrd)]
+pub struct NonNan(pub f64);
+impl Eq for NonNan {}
+impl Ord for NonNan {
+    fn cmp(&self, other: &NonNan) -> std::cmp::Ordering {
+        self.0.partial_cmp(&other.0).unwrap()
+    }
+}
+
 #[snippet(name = "solver", include = "fastio")]
 #[derive(Default)]
 /// NOTE
@@ -9,8 +19,6 @@ pub struct Solver {}
 #[snippet(name = "solver")]
 impl Solver {
     pub fn solve(&mut self) {
-        // let stdout = std::io::stdout();
-        // let mut wrt = fastio::Writer::new(stdout.lock());
         let stdin = std::io::stdin();
         let mut scn = fastio::Scanner::new(stdin.lock());
     }
