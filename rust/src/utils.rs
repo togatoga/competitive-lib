@@ -30,7 +30,7 @@ pub mod utils {
 
     #[allow(dead_code)]
     #[derive(PartialEq, PartialOrd)]
-    struct NonNan(pub f64);
+    pub struct NonNan(pub f64);
     impl Eq for NonNan {}
     impl Ord for NonNan {
         fn cmp(&self, other: &NonNan) -> std::cmp::Ordering {
