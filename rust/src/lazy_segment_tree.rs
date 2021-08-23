@@ -344,7 +344,7 @@ mod tests {
     }
 
     use super::super::mod_int::mod_int;
-    type ModInt = mod_int::ModInt<i32, mod_int::Mod1000000007>;
+    type ModInt = mod_int::ModInt<i64, mod_int::Mod1000000007>;
     struct AdditiveMulMod;
     impl Monoid for Additive<ModInt> {
         type S = ModInt;
@@ -357,7 +357,7 @@ mod tests {
     }
     impl MapMonoid for AdditiveMulMod {
         type M = Additive<ModInt>;
-        type F = i32;
+        type F = i64;
         fn identity_map() -> Self::F {
             1
         }
@@ -393,9 +393,9 @@ mod tests {
                 .fold(ModInt::new(0), |x, y| x + *y);
             seg.apply_range(left, right, value);
             let seg_total_mod = seg.prod(left, right);
-            assert_eq!(seq_total_mod.val, seg_total_mod.val);
+            assert_eq!(seq_total_mod, seg_total_mod);
             for i in left..right {
-                assert_eq!(seg.prod(i, i + 1).val, seq[i].val);
+                assert_eq!(seg.prod(i, i + 1), seq[i]);
             }
         });
     }

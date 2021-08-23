@@ -158,7 +158,7 @@ pub mod mod_int {
             }
             )*)
     }
-    mod_int_impl!(usize i32 i64 u32 u64);
+    mod_int_impl!(usize i64 u64 i128);
 }
 #[cfg(test)]
 mod test {
