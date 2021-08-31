@@ -31,10 +31,7 @@ impl Solver {
 fn main() {
     std::thread::Builder::new()
         .stack_size(64 * 1024 * 1024) // 64MB
-        .spawn(|| {
-            let mut solver = Solver::default();
-            solver.solve()
-        })
+        .spawn(|| Solver::default().solve())
         .unwrap()
         .join()
         .unwrap();
