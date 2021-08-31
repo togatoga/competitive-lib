@@ -52,7 +52,7 @@ pub mod fastio {
         pub fn read_line(&mut self) -> String {
             let mut line = String::new();
             let _ = self.stdin.read_line(&mut line);
-            line
+            line.trim_end().to_string()
         }
         pub fn vec<T: std::str::FromStr>(&mut self, n: usize) -> Vec<T> {
             (0..n).map(|_| self.read()).collect()
