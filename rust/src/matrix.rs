@@ -1,157 +1,156 @@
 use cargo_snippet::snippet;
 #[snippet(name = "matrix")]
 pub mod matrix {
-    use std::ops::{Add, AddAssign, Index, IndexMut, Mul, MulAssign, Sub, SubAssign};
-    pub trait MatrixTrait: Default + Clone + Copy {}
-    #[derive(Clone)]
-    pub struct Matrix<T> {
-        data: Vec<Vec<T>>,
-    }
+    use std::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};
 
+    pub trait MatrixTrait: Default + Clone + Copy {}
+    #[derive(Clone, Default)]
+    pub struct Matrix<T> {
+        data: Vec<T>,
+        height: usize,
+        width: usize,
+    }
     impl<T: Default + Copy> Matrix<T> {
         pub fn new(h: usize, w: usize) -> Matrix<T> {
             assert!(h != 0 && w != 0);
             Matrix {
-                data: vec![vec![T::default(); w]; h],
+                data: vec![T::default(); h * w],
+                height: h,
+                width: w,
             }
         }
         pub fn width(&self) -> usize {
-            self.data[0].len()
+            self.width
         }
         pub fn height(&self) -> usize {
-            self.data.len()
+            self.height
+        }
+        pub fn get(&self, y: usize, x: usize) -> &T {
+            &self.data[y * self.width + x]
+        }
+        pub fn get_mut(&mut self, y: usize, x: usize) -> &mut T {
+            //cecho!(y, x, self.height, self.width);
+            &mut self.data[y * self.width + x]
         }
     }
-    impl<T: MatrixTrait + Mul<Output = T> + AddAssign> Matrix<T> {
+    impl<T: Default + Copy> From<Vec<Vec<T>>> for Matrix<T> {
+        fn from(x: Vec<Vec<T>>) -> Self {
+            let h = x.len();
+            let w = x[0].len();
+            let mut matrix = Matrix::new(h, w);
+            for i in 0..h {
+                for j in 0..w {
+                    *matrix.get_mut(i, j) = x[i][j];
+                }
+            }
+            matrix
+        }
+    }
+
+    impl<T: MatrixTrait + Mul<Output = T> + AddAssign + MulAssign> Matrix<T> {
         /// A^k
         /// O(hw^2logK)
         pub fn pow(&self, mut k: usize, one: T) -> Self {
             assert!(self.height() == self.width());
             let mut result = Self::new(self.height(), self.width());
             for i in 0..self.height() {
-                result[i][i] = one;
+                *result.get_mut(i, i) = one;
             }
             let mut s = self.clone();
             while k > 0 {
                 if k & 1 == 1 {
-                    result = result * s.clone();
+                    result = result.dot(&s);
                 }
-                s = s.clone() * s;
+
+                s = s.dot(&s);
                 k >>= 1;
             }
             result
         }
-    }
-
-    impl<T: MatrixTrait + Add<Output = T>> Add<&Matrix<T>> for Matrix<T> {
-        type Output = Matrix<T>;
-        fn add(self, rhs: &Matrix<T>) -> Self::Output {
-            assert!(self.height() == rhs.height() && self.width() == rhs.width());
-            let mut data = vec![vec![T::default(); self.width()]; self.height()];
-            for i in 0..self.height() {
-                for j in 0..self.width() {
-                    data[i][j] = self.data[i][j] + rhs.data[i][j];
-                }
-            }
-            Matrix { data }
-        }
-    }
-
-    impl<T: MatrixTrait + AddAssign> AddAssign<&Matrix<T>> for Matrix<T> {
-        fn add_assign(&mut self, rhs: &Matrix<T>) {
-            assert!(self.height() == rhs.height() && self.width() == rhs.width());
-            for i in 0..self.height() {
-                for j in 0..self.width() {
-                    self.data[i][j] += rhs.data[i][j];
-                }
-            }
-        }
-    }
-
-    impl<T: MatrixTrait + Sub<Output = T>> Sub<&Matrix<T>> for Matrix<T> {
-        type Output = Matrix<T>;
-        fn sub(self, rhs: &Matrix<T>) -> Self::Output {
-            assert!(self.height() == rhs.height() && self.width() == rhs.width());
-            let mut data = vec![vec![T::default(); self.width()]; self.height()];
-            for i in 0..self.height() {
-                for j in 0..self.width() {
-                    data[i][j] = self.data[i][j] - rhs.data[i][j];
-                }
-            }
-            Matrix { data }
-        }
-    }
-
-    impl<T: MatrixTrait + SubAssign> SubAssign<&Matrix<T>> for Matrix<T> {
-        fn sub_assign(&mut self, rhs: &Matrix<T>) {
-            assert!(self.height() == rhs.height() && self.width() == rhs.width());
-            for i in 0..self.height() {
-                for j in 0..self.width() {
-                    self.data[i][j] -= rhs.data[i][j];
-                }
-            }
-        }
-    }
-
-    impl<T> Index<usize> for Matrix<T> {
-        type Output = Vec<T>;
-        fn index(&self, index: usize) -> &Self::Output {
-            &self.data[index]
-        }
-    }
-    impl<T> IndexMut<usize> for Matrix<T> {
-        fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-            &mut self.data[index]
-        }
-    }
-
-    impl<T: MatrixTrait + Mul<Output = T> + AddAssign> Mul<&Matrix<T>> for Matrix<T> {
-        type Output = Matrix<T>;
-        /// O(h1w1w2)
-        fn mul(self, rhs: &Matrix<T>) -> Self::Output {
+        /// Matrix A*B = C
+        /// (A.height, A.width) = (n1, m1)
+        /// (B.height, B.width) = (n2, m2)
+        /// (m1 == n2)
+        /// multiple A by B and return a new matrix(n1, m2) C = A * B
+        /// O(A.height * A.width * B.width)
+        pub fn dot(&self, rhs: &Matrix<T>) -> Matrix<T> {
             assert!(self.width() == rhs.height());
-            let mut data = vec![vec![T::default(); rhs.width()]; self.height()];
+            let mut matrix = Matrix::new(self.height(), rhs.width());
             for i in 0..self.height() {
                 for k in 0..self.width() {
                     for j in 0..rhs.width() {
-                        data[i][j] += self[i][k] * rhs[k][j];
+                        *matrix.get_mut(i, j) += *self.get(i, k) * *rhs.get(k, j);
                     }
                 }
             }
-            Matrix { data }
+            matrix
+        }
+        /// A*d
+        pub fn mul(&self, d: T) -> Matrix<T> {
+            let mut matrix = self.clone();
+            matrix.data.iter_mut().for_each(|x| *x *= d);
+            matrix
+        }
+        /// A *= d
+        pub fn mul_assign(&mut self, d: T) {
+            self.data.iter_mut().for_each(|x| *x *= d);
         }
     }
-    impl<T: MatrixTrait + Mul<Output = T> + AddAssign> Mul<Matrix<T>> for Matrix<T> {
-        type Output = Matrix<T>;
-        /// O(h1w1w2)
-        fn mul(self, rhs: Matrix<T>) -> Self::Output {
-            assert!(self.width() == rhs.height());
-            let mut data = vec![vec![T::default(); rhs.width()]; self.height()];
-            for i in 0..self.height() {
-                for k in 0..self.width() {
-                    for j in 0..rhs.width() {
-                        data[i][j] += self[i][k] * rhs[k][j];
-                    }
-                }
+    impl<T: MatrixTrait + Add<Output = T> + AddAssign> Matrix<T> {
+        /// A + B
+        pub fn add_mat(&self, rhs: &Matrix<T>) -> Matrix<T> {
+            assert!(self.height() == rhs.height() && self.width() == rhs.width());
+            let data: Vec<_> = self
+                .data
+                .iter()
+                .zip(rhs.data.iter())
+                .map(|(x, y)| *x + *y)
+                .collect();
+
+            Matrix {
+                data,
+                height: self.height,
+                width: self.width,
             }
-            Matrix { data }
+        }
+        /// A += B
+        pub fn add_mat_assign(&mut self, rhs: &Matrix<T>) {
+            assert!(self.height() == rhs.height() && self.width() == rhs.width());
+            self.data
+                .iter_mut()
+                .zip(rhs.data.iter())
+                .for_each(|(x, y)| *x += *y);
         }
     }
 
-    impl<T: MatrixTrait + Mul<Output = T> + MulAssign> Mul<T> for Matrix<T> {
-        type Output = Matrix<T>;
-        fn mul(self, rhs: T) -> Self::Output {
-            let mut data = self.data.clone();
-            for i in 0..self.height() {
-                for j in 0..self.width() {
-                    data[i][j] *= rhs;
-                }
+    impl<T: MatrixTrait + Sub<Output = T> + SubAssign> Matrix<T> {
+        /// A - B
+        pub fn sub_mat(self, rhs: &Matrix<T>) -> Matrix<T> {
+            assert!(self.height() == rhs.height() && self.width() == rhs.width());
+            let data: Vec<_> = self
+                .data
+                .iter()
+                .zip(rhs.data.iter())
+                .map(|(x, y)| *x - *y)
+                .collect();
+
+            Matrix {
+                data,
+                height: self.height,
+                width: self.width,
             }
-            Matrix { data }
+        }
+        /// A -= B
+        pub fn sub_mat_assign(&mut self, rhs: &Matrix<T>) {
+            assert!(self.height() == rhs.height() && self.width() == rhs.width());
+            self.data
+                .iter_mut()
+                .zip(rhs.data.iter())
+                .for_each(|(x, y)| *x -= *y);
         }
     }
+
     /// impl MatrixTrait for * {}
-
     impl MatrixTrait for i32 {}
     impl MatrixTrait for i64 {}
     impl MatrixTrait for i128 {}
@@ -160,13 +159,34 @@ pub mod matrix {
     impl MatrixTrait for usize {}
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::matrix::Matrix;
 
     #[test]
-    fn test_matrix() {
-        let mut m = Matrix::<i32>::new(3, 3);
+    fn test_dot_matrix() {
+        let a = vec![vec![1, 1], vec![1, 0]];
+        let b = vec![vec![5, 2], vec![3, 1]];
+        let m1 = Matrix::from(a);
+        let m2 = Matrix::from(b);
+        let m3 = m1.dot(&m2);
+        let c = vec![vec![8, 3], vec![5, 2]];
+        for i in 0..m3.height() {
+            for j in 0..m3.width() {
+                assert_eq!(c[i][j], *m3.get(i, j));
+            }
+        }
+
+        let a = vec![vec![1, 2]];
+        let b = vec![vec![3, 4, 5], vec![6, 7, 8]];
+        let m1 = Matrix::from(a);
+        let m2 = Matrix::from(b);
+        let m3 = m1.dot(&m2);
+        let c = vec![vec![15, 18, 21]];
+        for i in 0..m3.height() {
+            for j in 0..m3.width() {
+                assert_eq!(c[i][j], *m3.get(i, j));
+            }
+        }
     }
 }
