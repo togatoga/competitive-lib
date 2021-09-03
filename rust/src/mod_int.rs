@@ -159,7 +159,12 @@ pub mod mod_int {
             )*)
     }
     mod_int_impl!(usize i64 u64 i128);
+
+    #[allow(dead_code)]
+    pub type ModInt1000000007 = ModInt<i64, Mod1000000007>;
+    pub type ModInt998244353 = ModInt<i64, Mod998244353>;
 }
+
 #[cfg(test)]
 mod test {
     use super::mod_int;
