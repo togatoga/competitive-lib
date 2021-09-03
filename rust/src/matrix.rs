@@ -2,13 +2,13 @@ use cargo_snippet::snippet;
 #[snippet(name = "matrix")]
 pub mod matrix {
     use std::ops::{Add, AddAssign, Index, IndexMut, Mul, MulAssign, Sub, SubAssign};
-    pub trait MatrixTrait: Add + Sub + Mul + Copy + Clone + Default {}
+    pub trait MatrixTrait: Default + Clone + Copy {}
     #[derive(Clone)]
     pub struct Matrix<T> {
         data: Vec<Vec<T>>,
     }
 
-    impl<T: MatrixTrait> Matrix<T> {
+    impl<T: Default + Copy> Matrix<T> {
         pub fn new(h: usize, w: usize) -> Matrix<T> {
             assert!(h != 0 && w != 0);
             Matrix {
@@ -23,6 +23,7 @@ pub mod matrix {
         }
     }
     impl<T: MatrixTrait + Mul<Output = T> + AddAssign> Matrix<T> {
+        /// A^k
         /// O(hw^2logK)
         pub fn pow(&self, mut k: usize, one: T) -> Self {
             assert!(self.height() == self.width());
@@ -92,13 +93,13 @@ pub mod matrix {
         }
     }
 
-    impl<T: MatrixTrait> Index<usize> for Matrix<T> {
+    impl<T> Index<usize> for Matrix<T> {
         type Output = Vec<T>;
         fn index(&self, index: usize) -> &Self::Output {
             &self.data[index]
         }
     }
-    impl<T: MatrixTrait> IndexMut<usize> for Matrix<T> {
+    impl<T> IndexMut<usize> for Matrix<T> {
         fn index_mut(&mut self, index: usize) -> &mut Self::Output {
             &mut self.data[index]
         }
@@ -148,5 +149,24 @@ pub mod matrix {
             }
             Matrix { data }
         }
+    }
+    /// impl MatrixTrait for * {}
+
+    impl MatrixTrait for i32 {}
+    impl MatrixTrait for i64 {}
+    impl MatrixTrait for i128 {}
+    impl MatrixTrait for u32 {}
+    impl MatrixTrait for u64 {}
+    impl MatrixTrait for usize {}
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::matrix::Matrix;
+
+    #[test]
+    fn test_matrix() {
+        let mut m = Matrix::<i32>::new(3, 3);
     }
 }
