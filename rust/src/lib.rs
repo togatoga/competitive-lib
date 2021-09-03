@@ -10,6 +10,7 @@ pub mod karatsuba;
 pub mod lazy_segment_tree;
 pub mod lca;
 pub mod macros;
+pub mod matrix;
 pub mod mod_int;
 pub mod mod_util;
 pub mod primal_dual;
