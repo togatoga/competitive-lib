@@ -4,7 +4,7 @@ pub mod matrix {
     use std::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};
 
     pub trait MatrixTrait: Default + Clone + Copy {}
-    #[derive(Clone, Default)]
+    #[derive(Clone, Default, Debug)]
     pub struct Matrix<T> {
         data: Vec<T>,
         height: usize,
