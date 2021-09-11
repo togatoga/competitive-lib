@@ -94,7 +94,7 @@ pub mod rustc_hash {
                 hash.add_to_hash(u16::from_ne_bytes(bytes[..2].try_into().unwrap()) as usize);
                 bytes = &bytes[2..];
             }
-            if (size_of::<usize>() > 1) && bytes.len() >= 1 {
+            if (size_of::<usize>() > 1) && !bytes.is_empty() {
                 hash.add_to_hash(bytes[0] as usize);
             }
             self.hash = hash.hash;

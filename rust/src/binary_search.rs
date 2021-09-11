@@ -75,7 +75,7 @@ mod tests {
         let mut rng = thread_rng();
         for _ in 0..test_case {
             let mut seq: Vec<i32> = (0..500).map(|_| rng.gen_range(0, max_value)).collect();
-            seq.sort();
+            seq.sort_unstable();
 
             for _ in 0..query_num {
                 let query = rng.gen_range(0, max_value + 100);

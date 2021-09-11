@@ -374,7 +374,7 @@ mod tests {
         let mut rng = thread_rng();
         let mut seq: Vec<ModInt> = (0..1000)
             .map(|_| rng.gen_range(0, 1000))
-            .map(|x| ModInt::new(x))
+            .map(ModInt::new)
             .collect();
         let n = seq.len();
         let mut seg: LazySegMentTree<AdditiveMulMod> = LazySegMentTree::from(seq.clone());

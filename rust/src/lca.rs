@@ -36,7 +36,7 @@ pub mod lca {
 
             for &nxt in edges[pos].iter() {
                 if Some(nxt) != parent {
-                    self.dfs(nxt, Some(pos), dist + 1, &edges);
+                    self.dfs(nxt, Some(pos), dist + 1, edges);
                 }
             }
         }

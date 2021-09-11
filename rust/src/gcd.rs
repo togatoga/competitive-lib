@@ -60,7 +60,7 @@ pub mod gcd {
         }
         let d = extended_gcd(b, a % b, y, x);
         *y -= a / b * *x;
-        return d;
+        d
     }
 
     pub fn module(a: i64, m: i64) -> i64 {

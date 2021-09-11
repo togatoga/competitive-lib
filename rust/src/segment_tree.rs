@@ -76,7 +76,7 @@ mod test {
     fn random_update() {
         let n = 1000;
         //max segment tree
-        let mut seg = SegmentTree::new(n, 0, |a, b| std::cmp::max(a, b));
+        let mut seg = SegmentTree::new(n, 0, std::cmp::max);
         let mut v = vec![0; n];
         for _ in 0..10000 {
             let value = thread_rng().gen_range(0, 1000);
