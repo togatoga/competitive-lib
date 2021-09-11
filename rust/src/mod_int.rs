@@ -153,6 +153,14 @@ pub mod mod_int {
                     self * rhs.val
                 }
             }
+
+            impl <M: Modulus> Mul<ModInt<$t, M>> for $t {
+                type Output = ModInt<$t, M>;
+                fn mul(self, rhs: ModInt<$t, M>) -> ModInt<$t, M> {
+                    rhs * self
+                }
+            }
+
             impl <M: Modulus> Mul<$t> for ModInt<$t, M> {
                 type Output = ModInt<$t, M>;
                 fn mul(self, rhs: $t) -> ModInt<$t, M> {
@@ -219,6 +227,11 @@ mod test {
         let b = ModInt::new(1234);
         let c = a * b;
         assert_eq!(c.val, 1234000);
+
+        let a = ModInt::new(500000004);
+
+        let c = 2 * a;
+        assert_eq!(c.val, 1);
     }
     #[test]
     fn test_new() {
