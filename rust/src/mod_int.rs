@@ -56,14 +56,23 @@ pub mod mod_int {
             }
             impl <M: Modulus> Add<ModInt<$t, M>> for ModInt<$t, M> {
                 type Output = ModInt<$t, M>;
-                fn add(self, other: ModInt<$t, M>) -> ModInt<$t, M> {
-                    self + other.val
+                fn add(self, rhs: ModInt<$t, M>) -> ModInt<$t, M> {
+                    self + rhs.val
+                }
+            }
+            impl <M: Modulus> Add<ModInt<$t, M>> for $t {
+                type Output = ModInt<$t, M>;
+                fn add(self, rhs: ModInt<$t, M>) -> ModInt<$t, M> {
+                    let x = self % M::VALUE as $t;
+                    let val = (x + rhs.val) % M::VALUE as $t;
+                    ModInt {val, phantom: PhantomData}
                 }
             }
             impl <M: Modulus> Add<$t> for ModInt<$t, M> {
                 type Output = ModInt<$t, M>;
                 fn add(self, rhs: $t) -> ModInt<$t, M> {
-                    let val = (rhs + self.val) % M::VALUE as $t;
+                    let x = rhs % M::VALUE as $t;
+                    let val = (self.val + x) % M::VALUE as $t;
                     ModInt {val, phantom: PhantomData}
                 }
             }
@@ -71,6 +80,13 @@ pub mod mod_int {
                 type Output = ModInt<$t, M>;
                 fn sub(self, rhs: ModInt<$t, M>) -> ModInt<$t, M> {
                     self - rhs.val
+                }
+            }
+            impl <M: Modulus> Sub<ModInt<$t, M>> for $t {
+                type Output = ModInt<$t, M>;
+                fn sub(self, rhs: ModInt<$t, M>) -> ModInt<$t, M> {
+                    let val = self % M::VALUE as $t;
+                    ModInt {val, phantom: PhantomData} - rhs
                 }
             }
             impl <M: Modulus> Sub<$t> for ModInt<$t, M> {
@@ -81,6 +97,8 @@ pub mod mod_int {
                     ModInt {val, phantom: PhantomData}
                 }
             }
+
+
             impl <M: Modulus> AddAssign<ModInt<$t, M>> for ModInt<$t, M> {
                 fn add_assign(&mut self, rhs: ModInt<$t, M>) {
                     *self = *self + rhs;
@@ -168,7 +186,7 @@ pub mod mod_int {
 
 #[cfg(test)]
 mod test {
-    use super::mod_int;
+    use super::mod_int::{self};
     type ModInt = mod_int::ModInt<usize, mod_int::Mod1000000007>;
 
     #[test]
@@ -178,6 +196,14 @@ mod test {
         let c = a + b;
 
         assert_eq!(c.val, 0);
+
+        let a = ModInt::new(1_000_000_000);
+        let c = 7 + a;
+        assert_eq!(c.val, 0);
+
+        let a = ModInt::new(2);
+        let c = 1 - a;
+        assert_eq!(c.val, 1000000006);
     }
     #[test]
     fn test_sub() {
