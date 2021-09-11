@@ -3,6 +3,7 @@ use cargo_snippet::snippet;
 /// Modular Integer
 /// NOTE
 /// If a modular isn't prime, you can't div.
+/// If you want to calculate a combination and permutation, you have to use `mod_comb`.
 pub mod mod_int {
     use std::marker::PhantomData;
     use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};

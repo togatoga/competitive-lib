@@ -1,6 +1,19 @@
 use cargo_snippet::snippet;
 #[snippet]
+///
 pub mod mod_comb {
+    pub enum PrimeModule {
+        Mod1000000007,
+        Mod998244353,
+    }
+    impl PrimeModule {
+        fn value(&self) -> usize {
+            match *self {
+                PrimeModule::Mod1000000007 => 1000000007,
+                PrimeModule::Mod998244353 => 998244353,
+            }
+        }
+    }
     pub struct ModComb {
         fact: Vec<usize>,
         inv_fact: Vec<usize>,
@@ -9,10 +22,11 @@ pub mod mod_comb {
 
     #[allow(dead_code)]
     impl ModComb {
-        pub fn new(size: usize, module: usize) -> ModComb {
+        pub fn new(size: usize, module: PrimeModule) -> ModComb {
             let mut fact = vec![0; size + 1];
             let mut inv_fact = vec![0; size + 1];
             fact[0] = 1;
+            let module = module.value();
             for i in 1..size + 1 {
                 fact[i] = i * fact[i - 1] % module;
             }
@@ -65,8 +79,7 @@ mod test {
     use super::mod_comb::ModComb;
     #[test]
     fn test_mod_util() {
-        const MOD: usize = 1e9 as usize + 7;
-        let mod_comb = ModComb::new(1000, MOD);
+        let mod_comb = ModComb::new(1000, crate::mod_comb::mod_comb::PrimeModule::Mod1000000007);
         //fact
         assert_eq!(mod_comb.fact(5), 120);
         assert_eq!(mod_comb.fact(10), 3628800);
@@ -81,6 +94,7 @@ mod test {
         assert_eq!(mod_comb.permutation(10, 3), 720);
         assert_eq!(mod_comb.permutation(1000, 999), 641419708);
 
+        const MOD: usize = 1e9 as usize + 7;
         //inv fact
         for i in 1..1000 {
             let one = mod_comb.fact(i) * mod_comb.inv_fact(i) % MOD;
