@@ -12,7 +12,7 @@ pub mod lca;
 pub mod macros;
 pub mod matrix;
 pub mod mod_int;
-pub mod mod_util;
+pub mod mod_comb;
 pub mod primal_dual;
 pub mod rolling_hash;
 pub mod rustc_hash;
