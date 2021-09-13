@@ -20,6 +20,7 @@ pub struct Solver {}
 impl Solver {
     pub fn solve(&mut self) {
         let stdin = std::io::stdin();
+		#[allow(clippy::all)]
         let mut scn = fastio::Scanner::new(stdin.lock());
     }
 }
