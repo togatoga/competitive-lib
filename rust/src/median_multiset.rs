@@ -1,12 +1,15 @@
 use crate::btree_multiset::btree_multiset::BTreeMultiSet;
 use cargo_snippet::snippet;
-#[snippet(include = "btree_multiset", prefix="use crate::btree_multiset::BTreeMultiSet;")]
+#[snippet(
+    include = "btree_multiset",
+    prefix = "use crate::btree_multiset::BTreeMultiSet;"
+)]
 /// Calcualte a median value in the set.
 /// verified: https://atcoder.jp/contests/abc218/submissions/25807030
 pub mod median_multiset {
-    
-    use std::iter::FromIterator;
+
     use super::*;
+    use std::iter::FromIterator;
 
     /// `MedianMultiSet` calcualtes a median value in the set.
     #[derive(Debug, Default, Clone)]

@@ -7,6 +7,7 @@ pub mod fenwick_tree;
 pub mod fordfulkerson;
 pub mod gaussian_elimination;
 pub mod gcd;
+pub mod geometry2d;
 pub mod karatsuba;
 pub mod lazy_segment_tree;
 pub mod lca;
