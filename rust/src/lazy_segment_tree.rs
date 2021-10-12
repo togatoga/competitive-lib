@@ -1,5 +1,7 @@
 use cargo_snippet::snippet;
 #[snippet]
+
+/// LazySegmentTree is copied from ac-library-rs
 pub mod lazy_segment_tree {
     pub trait Monoid {
         type S: Clone;
@@ -26,11 +28,17 @@ pub mod lazy_segment_tree {
         fn composition(f: &Self::F, g: &Self::F) -> Self::F;
     }
 
+    /// max(x1, x2, x3, ...)
     pub struct Max<S>(S);
+    /// min(x1, x2, x3, ..., xn)
     pub struct Min<S>(S);
+    /// x1 + x2 + x3 + ... + xn
     pub struct Additive<S>(S);
+
+    /// x1 *x2 * x3 * ... * xn
     pub struct Multiplicative<S>(S);
 
+    /// Implementation macros
     macro_rules! impl_monoid {
         ($($ty:ty),*) => {
             $(
@@ -77,103 +85,198 @@ pub mod lazy_segment_tree {
         )*
         };
     }
-    impl_monoid!(i8, i16, i32, i64, u8, u16, u32, u64, usize);
+    impl_monoid!(i8, i16, i32, i64, u8, u16, u32, usize, u64);
 
     pub struct LazySegMentTree<F>
     where
         F: MapMonoid,
     {
+        n: usize,
+        log: usize,
         size: usize,
-        data: Vec<<F::M as Monoid>::S>,
-        lazy: Vec<F::F>,
+        d: Vec<<F::M as Monoid>::S>,
+        lz: Vec<F::F>,
+    }
+
+    impl<F: MapMonoid> From<Vec<<F::M as Monoid>::S>> for LazySegMentTree<F> {
+        fn from(v: Vec<<F::M as Monoid>::S>) -> Self {
+            let n = v.len();
+            let mut log = 0;
+            let mut size = 1;
+            while size <= n {
+                size <<= 1;
+                log += 1;
+            }
+
+            let mut d = vec![F::identity_element(); 2 * size];
+            let lz = vec![F::identity_map(); size];
+            d[size..(size + n)].clone_from_slice(&v);
+            let mut ret = LazySegMentTree {
+                n,
+                size,
+                log,
+                d,
+                lz,
+            };
+            for i in (1..size).rev() {
+                ret.update(i);
+            }
+            ret
+        }
     }
     impl<F> LazySegMentTree<F>
     where
         F: MapMonoid,
     {
         pub fn new(n: usize) -> Self {
-            let mut size = 1;
-            while size < n {
-                size <<= 1;
-            }
-            let data = vec![F::identity_element(); 2 * size];
-            let lazy = vec![F::identity_map(); 2 * size];
-            LazySegMentTree { size, data, lazy }
+            vec![F::identity_element(); n].into()
         }
 
-        //0-index
-        pub fn set(&mut self, p: usize, x: <F::M as Monoid>::S) {
-            self.data[p + self.size] = x;
+        fn update(&mut self, k: usize) {
+            self.d[k] = F::binary_operation(&self.d[2 * k], &self.d[2 * k + 1]);
         }
-
-        //Must call this function just after finishing constructing the segment tree
-        pub fn build(&mut self) {
-            for k in (1..self.size).rev() {
-                self.data[k] = F::binary_operation(&self.data[2 * k], &self.data[2 * k + 1]);
+        fn all_apply(&mut self, k: usize, f: F::F) {
+            self.d[k] = F::mapping(&f, &self.d[k]);
+            if k < self.size {
+                self.lz[k] = F::composition(&f, &self.lz[k]);
             }
         }
+        fn push(&mut self, k: usize) {
+            self.all_apply(2 * k, self.lz[k].clone());
+            self.all_apply(2 * k + 1, self.lz[k].clone());
+            self.lz[k] = F::identity_map();
+        }
 
-        //propagate lazy values to childs
-        fn eval(&mut self, k: usize) {
-            if self.lazy[k] == F::identity_map() {
+        /// data[p] = x
+        /// O(logN)
+        pub fn set(&mut self, mut p: usize, x: <F::M as Monoid>::S) {
+            assert!(p < self.n);
+            p += self.size;
+            for i in (1..=self.log).rev() {
+                self.push(p >> i);
+            }
+            self.d[p] = x;
+            for i in 1..=self.log {
+                self.update(p >> i);
+            }
+        }
+        /// get data[p]
+        /// O(logN)
+        pub fn get(&mut self, mut p: usize) -> <F::M as Monoid>::S {
+            assert!(p < self.n);
+            p += self.size;
+            for i in (1..=self.log).rev() {
+                self.push(p >> i);
+            }
+            self.d[p].clone()
+        }
+
+        /// [l, r)
+        /// binary_operation(l,l+1,l+2,...r-1)
+        pub fn prod(&mut self, mut l: usize, mut r: usize) -> <F::M as Monoid>::S {
+            assert!(l <= r && r <= self.n);
+            if l == r {
+                return F::identity_element();
+            }
+
+            l += self.size;
+            r += self.size;
+
+            for i in (1..=self.log).rev() {
+                if ((l >> i) << i) != l {
+                    self.push(l >> i);
+                }
+                if ((r >> i) << i) != r {
+                    self.push(r >> i);
+                }
+            }
+
+            let mut sml = F::identity_element();
+            let mut smr = F::identity_element();
+            while l < r {
+                if l & 1 != 0 {
+                    sml = F::binary_operation(&sml, &self.d[l]);
+                    l += 1;
+                }
+                if r & 1 != 0 {
+                    r -= 1;
+                    smr = F::binary_operation(&self.d[r], &smr);
+                }
+                l >>= 1;
+                r >>= 1;
+            }
+
+            F::binary_operation(&sml, &smr)
+        }
+        /// [l, r)
+        /// binary_operation(a[0], ..., a[n - 1])
+        pub fn all_prod(&self) -> <F::M as Monoid>::S {
+            self.d[1].clone()
+        }
+
+        /// data[p] = f(data[p])
+        pub fn apply(&mut self, mut p: usize, f: F::F) {
+            assert!(p < self.n);
+            p += self.size;
+            for i in (1..=self.log).rev() {
+                self.push(p >> i);
+            }
+            self.d[p] = F::mapping(&f, &self.d[p]);
+            for i in 1..=self.log {
+                self.update(p >> i);
+            }
+        }
+
+        /// [l, r)
+        /// data[p] = f(data[p]) p=l,l+1,...r-1
+        pub fn apply_range(&mut self, mut l: usize, mut r: usize, f: F::F) {
+            assert!(l <= r && r <= self.n);
+            if l == r {
                 return;
             }
-            if k < self.size {
-                self.lazy[2 * k] = F::composition(&self.lazy[k], &self.lazy[2 * k]);
-                self.lazy[2 * k + 1] = F::composition(&self.lazy[k], &self.lazy[2 * k + 1]);
+
+            l += self.size;
+            r += self.size;
+
+            for i in (1..=self.log).rev() {
+                if ((l >> i) << i) != l {
+                    self.push(l >> i);
+                }
+                if ((r >> i) << i) != r {
+                    self.push((r - 1) >> i);
+                }
             }
-            self.data[k] = F::mapping(&self.lazy[k], &self.data[k]);
-            self.lazy[k] = F::identity_map();
-        }
 
-        fn apply_internal(&mut self, a: usize, b: usize, f: F::F, k: usize, l: usize, r: usize) {
-            self.eval(k);
-            if a <= l && r <= b {
-                self.lazy[k] = F::composition(&f, &self.lazy[k]);
-                self.eval(k);
-            } else if a < r && l < b {
-                self.apply_internal(a, b, f.clone(), 2 * k, l, (l + r) >> 1);
-                self.apply_internal(a, b, f, 2 * k + 1, (l + r) >> 1, r);
-                self.data[k] = F::binary_operation(&self.data[2 * k], &self.data[2 * k + 1]);
+            {
+                let l2 = l;
+                let r2 = r;
+                while l < r {
+                    if l & 1 != 0 {
+                        self.all_apply(l, f.clone());
+                        l += 1;
+                    }
+                    if r & 1 != 0 {
+                        r -= 1;
+                        self.all_apply(r, f.clone());
+                    }
+                    l >>= 1;
+                    r >>= 1;
+                }
+                l = l2;
+                r = r2;
             }
-        }
 
-        //0-index [a, b)
-        //a=f(a),a+1=f(a+1),...,b-1=f(b-1)
-        //e.g f(x) = x + 1
-        //a=a+1,a+1=a+2,...,b-1=b
-        pub fn apply(&mut self, a: usize, b: usize, f: F::F) {
-            self.apply_internal(a, b, f, 1, 0, self.size);
-        }
-
-        fn get_internal(
-            &mut self,
-            a: usize,
-            b: usize,
-            k: usize,
-            l: usize,
-            r: usize,
-        ) -> <F::M as Monoid>::S {
-            self.eval(k);
-            if a <= l && r <= b {
-                self.data[k].clone()
-            } else if a < r && l < b {
-                F::binary_operation(
-                    &self.get_internal(a, b, 2 * k, l, (l + r) >> 1),
-                    &self.get_internal(a, b, 2 * k + 1, (l + r) >> 1, r),
-                )
-            } else {
-                F::identity_element()
+            for i in 1..=self.log {
+                if ((l >> i) << i) != l {
+                    self.update(l >> i);
+                }
+                if ((r >> i) << i) != r {
+                    self.update((r - 1) >> i);
+                }
             }
-        }
-
-        //0-index [a, b)
-        //g(a.a+1...b-1)
-        //e.g g(x, y) = min(x, y)
-        pub fn get(&mut self, a: usize, b: usize) -> <F::M as Monoid>::S {
-            self.get_internal(a, b, 1, 0, self.size)
         }
     }
+
     use std::fmt::{Debug, Error, Formatter};
 
     impl<F> Debug for LazySegMentTree<F>
@@ -183,8 +286,8 @@ pub mod lazy_segment_tree {
         <F::M as Monoid>::S: Debug,
     {
         fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
-            for i in 0..self.size {
-                f.write_fmt(format_args!("{:?}\t", self.data[self.size + i]))?;
+            for i in 0..self.log {
+                f.write_fmt(format_args!("{:?}\t", self.d[self.log + i]))?;
             }
             Ok(())
         }
@@ -222,7 +325,6 @@ mod tests {
         for (i, x) in seq.iter().enumerate() {
             seg.set(i, *x);
         }
-        seg.build();
 
         (0..100).for_each(|_| {
             let left = rng.gen_range(0, n);
@@ -232,12 +334,69 @@ mod tests {
                 seq[i] += value;
             }
             let seq_max = *seq.iter().skip(left).take(right - left).max().unwrap();
-            seg.apply(left, right, value);
-            let seg_max = seg.get(left, right);
-            for i in left..right {
-                assert_eq!(seg.get(i, i + 1), seq[i]);
-            }
+            seg.apply_range(left, right, value);
+            let seg_max = seg.prod(left, right);
             assert_eq!(seq_max, seg_max);
+            for i in left..right {
+                assert_eq!(seg.prod(i, i + 1), seq[i]);
+            }
+        });
+    }
+
+    use super::super::mod_int::mod_int;
+    type ModInt = mod_int::ModInt<i64, mod_int::Mod1000000007>;
+    struct AdditiveMulMod;
+    impl Monoid for Additive<ModInt> {
+        type S = ModInt;
+        fn identity() -> Self::S {
+            ModInt::new(0)
+        }
+        fn binary_operation(a: &Self::S, b: &Self::S) -> Self::S {
+            *a + *b
+        }
+    }
+    impl MapMonoid for AdditiveMulMod {
+        type M = Additive<ModInt>;
+        type F = i64;
+        fn identity_map() -> Self::F {
+            1
+        }
+        fn mapping(&f: &Self::F, &x: &ModInt) -> ModInt {
+            x * f
+        }
+        fn composition(f: &Self::F, g: &Self::F) -> Self::F {
+            f * g
+        }
+    }
+
+    #[test]
+    fn test_additive_mul_mod() {
+        let mut rng = thread_rng();
+        let mut seq: Vec<ModInt> = (0..1000)
+            .map(|_| rng.gen_range(0, 1000))
+            .map(ModInt::new)
+            .collect();
+        let n = seq.len();
+        let mut seg: LazySegMentTree<AdditiveMulMod> = LazySegMentTree::from(seq.clone());
+
+        (0..100).for_each(|_| {
+            let left = rng.gen_range(0, n);
+            let right = rng.gen_range(left, n) + 1;
+            let value = rng.gen_range(0, 100);
+            for i in left..right {
+                seq[i] *= value;
+            }
+            let seq_total_mod = seq
+                .iter()
+                .skip(left)
+                .take(right - left)
+                .fold(ModInt::new(0), |x, y| x + *y);
+            seg.apply_range(left, right, value);
+            let seg_total_mod = seg.prod(left, right);
+            assert_eq!(seq_total_mod, seg_total_mod);
+            for i in left..right {
+                assert_eq!(seg.prod(i, i + 1), seq[i]);
+            }
         });
     }
 }

@@ -3,6 +3,7 @@ use cargo_snippet::snippet;
 /// Modular Integer
 /// NOTE
 /// If a modular isn't prime, you can't div.
+/// If you want to calculate a combination and permutation, you have to use `mod_comb`.
 pub mod mod_int {
     use std::marker::PhantomData;
     use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
@@ -55,14 +56,23 @@ pub mod mod_int {
             }
             impl <M: Modulus> Add<ModInt<$t, M>> for ModInt<$t, M> {
                 type Output = ModInt<$t, M>;
-                fn add(self, other: ModInt<$t, M>) -> ModInt<$t, M> {
-                    self + other.val
+                fn add(self, rhs: ModInt<$t, M>) -> ModInt<$t, M> {
+                    self + rhs.val
+                }
+            }
+            impl <M: Modulus> Add<ModInt<$t, M>> for $t {
+                type Output = ModInt<$t, M>;
+                fn add(self, rhs: ModInt<$t, M>) -> ModInt<$t, M> {
+                    let x = self % M::VALUE as $t;
+                    let val = (x + rhs.val) % M::VALUE as $t;
+                    ModInt {val, phantom: PhantomData}
                 }
             }
             impl <M: Modulus> Add<$t> for ModInt<$t, M> {
                 type Output = ModInt<$t, M>;
                 fn add(self, rhs: $t) -> ModInt<$t, M> {
-                    let val = (rhs + self.val) % M::VALUE as $t;
+                    let x = rhs % M::VALUE as $t;
+                    let val = (self.val + x) % M::VALUE as $t;
                     ModInt {val, phantom: PhantomData}
                 }
             }
@@ -70,6 +80,13 @@ pub mod mod_int {
                 type Output = ModInt<$t, M>;
                 fn sub(self, rhs: ModInt<$t, M>) -> ModInt<$t, M> {
                     self - rhs.val
+                }
+            }
+            impl <M: Modulus> Sub<ModInt<$t, M>> for $t {
+                type Output = ModInt<$t, M>;
+                fn sub(self, rhs: ModInt<$t, M>) -> ModInt<$t, M> {
+                    let val = self % M::VALUE as $t;
+                    ModInt {val, phantom: PhantomData} - rhs
                 }
             }
             impl <M: Modulus> Sub<$t> for ModInt<$t, M> {
@@ -80,6 +97,8 @@ pub mod mod_int {
                     ModInt {val, phantom: PhantomData}
                 }
             }
+
+
             impl <M: Modulus> AddAssign<ModInt<$t, M>> for ModInt<$t, M> {
                 fn add_assign(&mut self, rhs: ModInt<$t, M>) {
                     *self = *self + rhs;
@@ -134,6 +153,14 @@ pub mod mod_int {
                     self * rhs.val
                 }
             }
+
+            impl <M: Modulus> Mul<ModInt<$t, M>> for $t {
+                type Output = ModInt<$t, M>;
+                fn mul(self, rhs: ModInt<$t, M>) -> ModInt<$t, M> {
+                    rhs * self
+                }
+            }
+
             impl <M: Modulus> Mul<$t> for ModInt<$t, M> {
                 type Output = ModInt<$t, M>;
                 fn mul(self, rhs: $t) -> ModInt<$t, M> {
@@ -158,11 +185,16 @@ pub mod mod_int {
             }
             )*)
     }
-    mod_int_impl!(usize i32 i64 u32 u64);
+    mod_int_impl!(usize i64 u64 i128);
+
+    #[allow(dead_code)]
+    pub type ModInt1000000007 = ModInt<i64, Mod1000000007>;
+    pub type ModInt998244353 = ModInt<i64, Mod998244353>;
 }
+
 #[cfg(test)]
 mod test {
-    use super::mod_int;
+    use super::mod_int::{self};
     type ModInt = mod_int::ModInt<usize, mod_int::Mod1000000007>;
 
     #[test]
@@ -172,6 +204,14 @@ mod test {
         let c = a + b;
 
         assert_eq!(c.val, 0);
+
+        let a = ModInt::new(1_000_000_000);
+        let c = 7 + a;
+        assert_eq!(c.val, 0);
+
+        let a = ModInt::new(2);
+        let c = 1 - a;
+        assert_eq!(c.val, 1000000006);
     }
     #[test]
     fn test_sub() {
@@ -187,6 +227,11 @@ mod test {
         let b = ModInt::new(1234);
         let c = a * b;
         assert_eq!(c.val, 1234000);
+
+        let a = ModInt::new(500000004);
+
+        let c = 2 * a;
+        assert_eq!(c.val, 1);
     }
     #[test]
     fn test_new() {

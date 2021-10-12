@@ -24,18 +24,19 @@ pub mod rolling_hash {
             RollingHash { hash, pow }
         }
 
-        //[l, r)
+        /// Get a hash value range [l, r)
         pub fn hash1(&self, l: usize, r: usize) -> u64 {
             (self.hash[0][r] + MOD[0] - self.hash[0][l] * self.pow[0][r - l] % MOD[0]) % MOD[0]
         }
-        //[l, r)
+        /// Get a hash value range [l, r)
         pub fn hash2(&self, l: usize, r: usize) -> u64 {
             (self.hash[1][r] + MOD[1] - self.hash[1][l] * self.pow[1][r - l] % MOD[1]) % MOD[1]
         }
-        //[l, r)
+        /// Get tuple hash values range [l, r)
         pub fn hash(&self, l: usize, r: usize) -> (u64, u64) {
             (self.hash1(l, r), self.hash2(l, r))
         }
+        /// Return a boolean whether hash values range [l1, r1) is eual to a value range [l2, r2).
         pub fn equal(&self, l1: usize, r1: usize, l2: usize, r2: usize) -> bool {
             self.hash1(l1, r1) == self.hash1(l2, r2) && self.hash2(l1, r1) == self.hash2(l2, r2)
         }

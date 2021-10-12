@@ -16,11 +16,7 @@ pub mod timer {
             self.start = Some(Instant::now());
         }
         pub fn elapsed(&self) -> Option<Duration> {
-            if let Some(start) = self.start {
-                Some(Instant::now() - start)
-            } else {
-                None
-            }
+            self.start.map(|start| Instant::now() - start)
         }
     }
 }
