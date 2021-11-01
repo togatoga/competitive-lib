@@ -5,6 +5,7 @@ pub mod dinic;
 pub mod fastio;
 pub mod fenwick_tree;
 pub mod fordfulkerson;
+pub mod fraction;
 pub mod gaussian_elimination;
 pub mod gcd;
 pub mod geometry2d;
