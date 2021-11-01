@@ -7,10 +7,9 @@ pub mod fraction {
         numerator: i64,
         denominator: i64,
     }
-
-    // Methods
     impl Fraction {
         /// Make a new Fraction to represent n / d.
+        /// `n` represents positive and negative. On the other hand, `d` must be positive.
         pub fn new(n: i64, d: i64) -> Fraction {
             if d == 0 {
                 panic!("Attempted to set denominator to 0");
@@ -18,7 +17,6 @@ pub mod fraction {
             if n == 0 {
                 return Fraction::zero();
             }
-
             let (n, d) = if (d > 0 && n > 0) || (d < 0 && n < 0) {
                 (n.abs(), d.abs())
             } else {
@@ -29,27 +27,22 @@ pub mod fraction {
                 denominator: d,
             }
         }
-
         pub fn zero() -> Fraction {
             Fraction {
-                numerator: 1,
-                denominator: 0,
+                numerator: 0,
+                denominator: 1,
             }
         }
-
-        // Getters
         pub fn num(&self) -> i64 {
             self.numerator
         }
         pub fn den(&self) -> i64 {
             self.denominator
         }
-        // Reduce method
         pub fn reduce(&self) -> Fraction {
             let mut abs_num = self.num().abs();
             let mut abs_den = self.den().abs();
             let mut gcd = 1;
-            // Modified Euclidean algorithm to find greatest common divisor (GCD)
             while (0 != abs_num) && (0 != abs_den) {
                 if abs_num > abs_den {
                     gcd = abs_den;
@@ -59,7 +52,6 @@ pub mod fraction {
                     abs_den %= abs_num;
                 }
             }
-            // Eliminate double negatives or move negative to numerator
             if 0 > self.den() {
                 gcd *= -1;
             }
@@ -68,11 +60,8 @@ pub mod fraction {
                 denominator: self.den() / gcd,
             }
         }
-
-        // Raising fraction to a power method
         pub fn pow(&self, exp: i64) -> Fraction {
             if exp < 0 {
-                // Negative exponents flip the fraction
                 let exp_u32 = -exp as u32;
                 let f = Fraction {
                     numerator: self.den().pow(exp_u32),
@@ -89,8 +78,6 @@ pub mod fraction {
             }
         }
     }
-
-    // Arithmetic operations & operator overload
     impl std::ops::Add for Fraction {
         type Output = Fraction;
         fn add(self, other: Fraction) -> Fraction {
@@ -142,8 +129,6 @@ pub mod fraction {
             f.reduce()
         }
     }
-
-    // Unary operator overload
     impl std::ops::Neg for Fraction {
         type Output = Fraction;
         fn neg(self) -> Fraction {
@@ -154,8 +139,6 @@ pub mod fraction {
             f.reduce()
         }
     }
-
-    // Comparison operator overloads
     use std::cmp::Ordering;
     impl std::cmp::PartialEq for Fraction {
         fn eq(&self, other: &Fraction) -> bool {
@@ -170,17 +153,9 @@ pub mod fraction {
     }
     impl Ord for Fraction {
         fn cmp(&self, other: &Fraction) -> Ordering {
-            if (0 > self.den()) || (0 > other.den()) {
-                // Need to add negative sign to num() and f.num() because
-                // negative in denominator causes comparison to be flipped
-                (-self.num() * other.den()).cmp(&(-other.num() * self.den()))
-            } else {
-                (self.num() * other.den()).cmp(&(other.num() * self.den()))
-            }
+            (self.num() * other.den()).cmp(&(other.num() * self.den()))
         }
     }
-
-    // Print formatting
     impl std::fmt::Display for Fraction {
         fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
             write!(f, "{}/{}", self.num(), self.den())
