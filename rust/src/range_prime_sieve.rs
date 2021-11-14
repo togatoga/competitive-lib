@@ -1,5 +1,6 @@
 /// A range prime sieve answers primes have the range of [L, R).
-/// Space: O(R-L)
+/// Space: O((R-L) + sqrt(R))
+/// Time: O(sqrt(R)*(loglogsqrt(R) + (R-L)*log(R)))
 pub mod range_prime_sieve {
     #[derive(Debug, Clone, Default)]
     pub struct RangePrimeSieve {
@@ -70,6 +71,7 @@ pub mod range_prime_sieve {
             }
         }
         /// Returns a boolean whether a number is prime.
+        /// Time: O(1)
         pub fn is_prime(&self, x: i64) -> bool {
             if x < self.small.len() as i64 {
                 self.small[x as usize] == x
@@ -79,6 +81,7 @@ pub mod range_prime_sieve {
             }
         }
         /// Returns the prime factorization of a number.
+        /// Time: log(x)
         pub fn factor(&self, mut x: i64) -> Vec<i64> {
             assert!(self.left <= x && x < self.right);
             let idx = (x - self.left) as usize;
