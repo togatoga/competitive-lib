@@ -3,6 +3,7 @@ use cargo_snippet::snippet;
 /// A range prime sieve answers primes have the range of [L, R).
 /// Space: O((R-L) + sqrt(R))
 /// Time: O(sqrt(R)*(loglogsqrt(R) + (R-L)*log(R)))
+/// verified@https://atcoder.jp/contests/abc227/submissions/27263064
 pub mod range_prime_sieve {
     #[derive(Debug, Clone, Default)]
     pub struct RangePrimeSieve {
