@@ -1,15 +1,15 @@
 /// A range prime sieve answers primes have the range of [L, R).
 /// Space: O(R-L)
 pub mod range_prime_sieve {
-    use rand::seq::index::sample;
-
     #[derive(Debug, Clone, Default)]
     pub struct RangePrimeSieve {
         left: i64,
         right: i64,
         boarder: i64,
         small: Vec<i64>,
+        /// Prime factors for large number
         large: Vec<Vec<i64>>,
+        /// Product of prime factors for large number
         aux: Vec<i64>,
     }
     impl RangePrimeSieve {
@@ -17,7 +17,7 @@ pub mod range_prime_sieve {
         pub fn new(left: i64, right: i64) -> RangePrimeSieve {
             assert!(left >= 0 && right > 0);
             assert!(left < right);
-            let m = ((right as f64) as i64 + 1) as usize;
+            let m = ((right as f64).sqrt() as i64 + 1) as usize;
 
             let diff = (right - left) as usize;
 
@@ -69,27 +69,60 @@ pub mod range_prime_sieve {
                 aux,
             }
         }
-        /// Returns a boolean whether a number is prime or not.
+        /// Returns a boolean whether a number is prime.
         pub fn is_prime(&self, x: i64) -> bool {
-            assert!(self.left <= x && x < self.right);
-            true
+            if x < self.small.len() as i64 {
+                self.small[x as usize] == x
+            } else {
+                let idx = (x - self.left) as usize;
+                self.large[idx].is_empty()
+            }
         }
         /// Returns the prime factorization of a number.
         pub fn factor(&self, mut x: i64) -> Vec<i64> {
             assert!(self.left <= x && x < self.right);
             let idx = (x - self.left) as usize;
-
             let mut res = self.large[idx].clone();
             x /= self.aux[idx];
             if x >= self.boarder {
                 res.push(x);
                 return res;
             }
+
             while x > 1 {
                 res.push(self.small[x as usize]);
                 x /= self.small[x as usize];
             }
             res
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::range_prime_sieve::RangePrimeSieve;
+
+    #[test]
+    pub fn test_range_prime_sieve() {
+        let left = 1e10 as i64;
+        let right = left + 50000;
+        let rpf = RangePrimeSieve::new(left, right);
+        for x in left..right {
+            let mut y = x;
+            let mut p = 2;
+            let mut factors = vec![];
+            while p * p <= y {
+                while y % p == 0 {
+                    y /= p;
+                    factors.push(p);
+                }
+                p += 1;
+            }
+            if y != 1 {
+                factors.push(y);
+            }
+            assert_eq!(rpf.factor(x), factors);
+            assert_eq!(rpf.is_prime(x), factors.len() == 1);
         }
     }
 }
