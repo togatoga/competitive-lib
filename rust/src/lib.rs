@@ -25,3 +25,4 @@ pub mod scc;
 pub mod segment_tree;
 pub mod timer;
 pub mod utils;
+pub mod foldable_queue;
