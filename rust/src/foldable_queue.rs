@@ -3,7 +3,6 @@ use cargo_snippet::snippet;
 /// Sliding Window Aggregation
 pub mod foldable_queue {
     use std::{
-        collections::{BinaryHeap, VecDeque},
         fmt::Debug,
     };
 
@@ -117,7 +116,7 @@ mod test {
     }
     #[test]
     fn test_sliding_minimum_elements() {
-        let mut fque = foldable_queue::FoldableQueue::new(|x: usize, y: usize| std::cmp::min(x, y));
+        let mut fque = foldable_queue::FoldableQueue::new(std::cmp::min);
         let k = 3;
         let v = vec![1, 7, 7, 4, 8, 1, 6];
         let n = v.len();
