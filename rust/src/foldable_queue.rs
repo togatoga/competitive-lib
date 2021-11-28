@@ -2,9 +2,7 @@ use cargo_snippet::snippet;
 #[snippet]
 /// Sliding Window Aggregation
 pub mod foldable_queue {
-    use std::{
-        fmt::Debug,
-    };
+    use std::fmt::Debug;
 
     /// A data structure is to fold all elements in the queue.
     /// The `op` satisfy semigroup.
