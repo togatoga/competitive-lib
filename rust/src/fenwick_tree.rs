@@ -8,7 +8,7 @@ pub mod fenwick_tree {
         init_value: T,
     }
 
-    impl<T: Copy + Clone + AddAssign + SubAssign + Sub<Output = T>> FenwickTree<T> {
+    impl<T: Copy + Clone + AddAssign + SubAssign + Sub<Output = T> + Ord> FenwickTree<T> {
         pub fn new(n: usize, init_value: T) -> FenwickTree<T> {
             FenwickTree {
                 values: vec![init_value; n + 1],
@@ -46,6 +46,47 @@ pub mod fenwick_tree {
                 self.values[index] -= x;
                 index |= index + 1;
             }
+        }
+        /// Calculate the lower bound of `sum`.
+        /// Returns the first index(0-index) so that a[0] + a[1] + a[2] + ... + a[i] >= x
+        pub fn lower_bound(&self, x: &T) -> Option<usize> {
+            let mut left = 0;
+            let mut right = self.values.len();
+            let mut result = None;
+            while left < right {
+                let med = (left + right) / 2;
+                match self.sum(med).cmp(x) {
+                    std::cmp::Ordering::Less => {
+                        left = med + 1;
+                    }
+                    std::cmp::Ordering::Equal | std::cmp::Ordering::Greater => {
+                        result = Some(med - 1);
+                        right = med;
+                    }
+                }
+            }
+            result
+        }
+
+        /// Calculate the upper bound of `sum`.
+        /// Returns the first index(0-index) so that a[0] + a[1] + a[2] + ... + a[i] > x
+        pub fn upper_bound(&self, x: &T) -> Option<usize> {
+            let mut left = 0;
+            let mut right = self.values.len();
+            let mut result = None;
+            while left < right {
+                let med = (left + right) / 2;
+                match self.sum(med).cmp(x) {
+                    std::cmp::Ordering::Equal | std::cmp::Ordering::Less => {
+                        left = med + 1;
+                    }
+                    std::cmp::Ordering::Greater => {
+                        result = Some(med - 1);
+                        right = med;
+                    }
+                }
+            }
+            result
         }
     }
 }
