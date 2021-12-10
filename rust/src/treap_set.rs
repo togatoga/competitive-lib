@@ -44,7 +44,8 @@ pub mod treap_set {
                 Some(&self.key)
             } else {
                 self.right
-                    .as_ref().and_then(|right| right.kth(k - left_size - 1))
+                    .as_ref()
+                    .and_then(|right| right.kth(k - left_size - 1))
             }
         }
     }
@@ -97,6 +98,9 @@ pub mod treap_set {
                 self.root = Some(Box::new(Node::new(value, priority)));
                 true
             }
+        }
+        pub fn contains(&self, value: T) -> bool {
+            self.root.as_ref().map_or(false, |root| root.find(&value).0)
         }
         pub fn kth(&self, k: usize) -> Option<&T> {
             self.root.as_ref().and_then(|root| root.kth(k))
