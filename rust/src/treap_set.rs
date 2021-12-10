@@ -39,13 +39,12 @@ pub mod treap_set {
         fn kth(&self, k: usize) -> Option<&T> {
             let left_size = size(&self.left);
             if left_size > k {
-                self.left.as_ref().map_or(None, |left| left.kth(k))
+                self.left.as_ref().and_then(|left| left.kth(k))
             } else if left_size == k {
                 Some(&self.key)
             } else {
                 self.right
-                    .as_ref()
-                    .map_or(None, |right| right.kth(k - left_size - 1))
+                    .as_ref().and_then(|right| right.kth(k - left_size - 1))
             }
         }
     }
@@ -100,7 +99,7 @@ pub mod treap_set {
             }
         }
         pub fn kth(&self, k: usize) -> Option<&T> {
-            self.root.as_ref().map_or(None, |root| root.kth(k))
+            self.root.as_ref().and_then(|root| root.kth(k))
         }
     }
 
