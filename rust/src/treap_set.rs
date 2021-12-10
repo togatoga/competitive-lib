@@ -1,5 +1,5 @@
 pub mod treap_set {
-    use std::cmp::Ordering;
+    use std::{cmp::Ordering};
 
     #[derive(Debug, Clone)]
     struct Node<T> {
@@ -83,6 +83,15 @@ pub mod treap_set {
             size(&self.root)
         }
 
+        /// Returns `true` if the tree contains no elements.
+        pub fn is_empty(&self) -> bool {
+            self.root.is_none()
+        }
+
+        /// Adds a value to the tree.
+        ///
+        /// If the tree did not have this value present, `true` is returned.
+        /// Otherwise, `false` is returned.
         pub fn insert(&mut self, value: T) -> bool {
             let priority = self.rng.next();
             if let Some(root) = self.root.take() {
@@ -109,10 +118,7 @@ pub mod treap_set {
 
     fn insert<T: Ord>(node: Option<Box<Node<T>>>, k: usize, key: T, priority: u32) -> Box<Node<T>> {
         let (left, right) = split(node, k);
-        let node = merge(left, Some(Box::new(Node::new(key, priority))));
-        let mut node = merge(node, right).expect("empty node");
-        node.update_size();
-        node
+        merge(merge(left, Some(Box::new(Node::new(key, priority)))), right).expect("empty node")
     }
 
     fn merge<T: Ord>(
