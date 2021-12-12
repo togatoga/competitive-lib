@@ -1,3 +1,5 @@
+use cargo_snippet::snippet;
+#[snippet]
 pub mod treap {
     use std::cmp::Ordering;
 
@@ -54,6 +56,7 @@ pub mod treap {
         node.as_ref().map_or(0, |node| node.size)
     }
 
+    /// `TreapSet` a set based on a treap.
     #[derive(Debug, Clone)]
     pub struct TreapSet<T> {
         root: Option<Box<Node<T>>>,
