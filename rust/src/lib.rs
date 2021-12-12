@@ -25,5 +25,5 @@ pub mod rustc_hash;
 pub mod scc;
 pub mod segment_tree;
 pub mod timer;
-pub mod treap_set;
+pub mod treap;
 pub mod utils;

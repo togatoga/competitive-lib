@@ -1,5 +1,5 @@
-pub mod treap_set {
-    use std::{cmp::Ordering};
+pub mod treap {
+    use std::cmp::Ordering;
 
     #[derive(Debug, Clone)]
     struct Node<T> {
