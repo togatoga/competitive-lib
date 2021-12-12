@@ -108,17 +108,63 @@ pub mod treap {
                 true
             }
         }
-        pub fn contains(&self, value: T) -> bool {
-            self.root.as_ref().map_or(false, |root| root.find(&value).0)
+        /// Removes a value from the tree. Returns whether the value was present in the tree.
+        pub fn remove(&mut self, value: &T) -> bool {
+            if let Some(root) = self.root.take() {
+                let (contains, k) = root.find(value);
+                if !contains {
+                    self.root = Some(root);
+                    false
+                } else {
+                    self.root = remove(Some(root), k);
+                    true
+                }
+            } else {
+                false
+            }
         }
+
+        /// Returns `true` if the tree contains a value.
+        pub fn contains(&self, value: &T) -> bool {
+            self.root.as_ref().map_or(false, |root| root.find(value).0)
+        }
+
+        /// Returns a k-th(0-index) value in decreasing order in the tree.
         pub fn kth(&self, k: usize) -> Option<&T> {
             self.root.as_ref().and_then(|root| root.kth(k))
+        }
+
+        /// Returns an index value indicating that a value is in decreasing order in the tree.
+        pub fn find(&self, value: &T) -> Option<usize> {
+            match self.root.as_ref() {
+                Some(root) => {
+                    let (contains, k) = root.find(value);
+                    if contains {
+                        Some(k)
+                    } else {
+                        None
+                    }
+                }
+                None => None,
+            }
         }
     }
 
     fn insert<T: Ord>(node: Option<Box<Node<T>>>, k: usize, key: T, priority: u32) -> Box<Node<T>> {
         let (left, right) = split(node, k);
         merge(merge(left, Some(Box::new(Node::new(key, priority)))), right).expect("empty node")
+    }
+
+    fn remove<T: Ord>(node: Option<Box<Node<T>>>, k: usize) -> Option<Box<Node<T>>> {
+        let (left, right) = split(node, k + 1);
+        let (left, _) = split(left, k);
+        match merge(left, right) {
+            Some(mut node) => {
+                node.update_size();
+                Some(node)
+            }
+            None => None,
+        }
     }
 
     fn merge<T: Ord>(
@@ -205,6 +251,103 @@ pub mod treap {
 
 #[cfg(test)]
 mod tests {
+
+    use std::collections::BTreeSet;
+
+    use super::treap::TreapSet;
+    use rand::prelude::StdRng;
+    use rand::prelude::*;
+
     #[test]
-    fn test_treap_set() {}
+    fn test_treap_insert_erase() {
+        let mut treap = TreapSet::new(71);
+        let mut rng = StdRng::seed_from_u64(141);
+        let max = 1000000;
+
+        let mut v = (0..max).collect::<Vec<_>>();
+
+        v.shuffle(&mut rng);
+        for &i in v.iter() {
+            assert!(!treap.contains(&i));
+            assert!(treap.insert(i));
+            assert!(!treap.insert(i));
+            assert!(treap.contains(&i));
+        }
+
+        v.shuffle(&mut rng);
+        for &i in v.iter() {
+            assert!(treap.contains(&i));
+            assert_eq!(treap.remove(&i), true);
+            assert_eq!(treap.remove(&i), false);
+            assert!(!treap.contains(&i));
+        }
+    }
+
+    #[test]
+    fn test_treap_nth() {
+        let mut rng = StdRng::seed_from_u64(141);
+
+        for _ in 0..10 {
+            let mut treap = TreapSet::new(71);
+            let max = 100000;
+            let mut v = (0..max)
+                .map(|_| rng.gen_range(0, 1_000_000_000))
+                .collect::<Vec<_>>();
+            v.sort_unstable();
+            v.dedup();
+            v.shuffle(&mut rng);
+            for &i in v.iter() {
+                assert!(treap.insert(i));
+                assert!(!treap.insert(i));
+            }
+            v.sort_unstable();
+
+            for (i, v) in v.into_iter().enumerate() {
+                assert_eq!(treap.kth(i), Some(&v));
+            }
+        }
+    }
+
+    #[test]
+    fn test_random_insertion() {
+        use rand::distributions::Uniform;
+
+        let mut rng = thread_rng();
+        let mut set = BTreeSet::new();
+        let mut treap = TreapSet::new(42);
+        for _ in 0..2000 {
+            let x = rng.gen::<i64>();
+
+            if rng.sample(Uniform::from(0..10)) == 0 {
+                // remove
+                if set.contains(&x) {
+                    assert!(treap.contains(&x));
+                    set.remove(&x);
+                    assert_eq!(treap.remove(&x), true);
+                    assert_eq!(treap.remove(&x), false);
+                    assert!(!treap.contains(&x));
+                } else {
+                    assert!(!treap.contains(&x));
+                }
+            } else {
+                // insert
+                if set.contains(&x) {
+                    assert!(treap.contains(&x));
+                } else {
+                    assert!(!treap.contains(&x));
+                    assert!(treap.insert(x));
+                    assert!(!treap.insert(x));
+                    set.insert(x);
+                    assert!(treap.contains(&x));
+                }
+            }
+
+            assert_eq!(treap.len(), set.len());
+
+            for (i, x) in set.iter().enumerate() {
+                assert_eq!(treap.kth(i), Some(x));
+                assert_eq!(treap.find(x), Some(i));
+            }
+        }
+    }
 }
