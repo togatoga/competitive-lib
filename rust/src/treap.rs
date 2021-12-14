@@ -137,7 +137,7 @@ pub mod treap {
             self.root.as_ref().and_then(|root| root.kth(k))
         }
 
-        /// Returns an index value indicating that a value is in decreasing order in the tree.
+        /// Returns an index indicating what number a value is in decreasing order in the tree.
         pub fn find(&self, value: &T) -> Option<usize> {
             match self.root.as_ref() {
                 Some(root) => {
