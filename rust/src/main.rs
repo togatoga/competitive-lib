@@ -25,7 +25,7 @@ impl Solver {
     }
 }
 
-#[snippet]
+#[snippet(prefix = "#[allow(unused_imports)]\nuse crate::gap_traits::*;")]
 #[snippet(include = "macros")]
 #[snippet(include = "utils")]
 #[snippet(include = "solver")]

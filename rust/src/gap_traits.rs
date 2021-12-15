@@ -3,7 +3,7 @@ use cargo_snippet::snippet;
 /// These traits provides almost same methods that mordern Rust compiler provides and fill the gap between them.
 pub mod gap_traits {
     /// We don't need this trait if we can use mordern rust compiler greater than equal to 1.50.
-    trait BoolToOption {
+    pub trait BoolToOption {
         fn then_some<T>(self, t: T) -> Option<T>;
         fn then<T, F: FnOnce() -> T>(self, f: F) -> Option<T>;
     }
