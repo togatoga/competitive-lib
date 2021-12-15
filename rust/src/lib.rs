@@ -7,6 +7,7 @@ pub mod fenwick_tree;
 pub mod foldable_queue;
 pub mod fordfulkerson;
 pub mod fraction;
+pub mod gap_traits;
 pub mod gaussian_elimination;
 pub mod gcd;
 pub mod geometry2d;
