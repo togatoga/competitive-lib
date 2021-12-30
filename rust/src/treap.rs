@@ -132,12 +132,12 @@ pub mod treap {
             self.root.as_ref().map_or(false, |root| root.find(value).0)
         }
 
-        /// Returns a k-th(0-index) value in decreasing order in the tree.
+        /// Returns a k-th(0-index) value in increasing order in the tree.
         pub fn kth(&self, k: usize) -> Option<&T> {
             self.root.as_ref().and_then(|root| root.kth(k))
         }
 
-        /// Returns an index indicating what number a value is in decreasing order in the tree.
+        /// Returns an index indicating what number a value is in increasing order in the tree.
         pub fn find(&self, value: &T) -> Option<usize> {
             match self.root.as_ref() {
                 Some(root) => {
