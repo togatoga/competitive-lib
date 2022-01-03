@@ -9,10 +9,7 @@ pub mod union_find {
     impl UnionFind {
         pub fn new(size: usize) -> UnionFind {
             let parent = vec![-1; size];
-            UnionFind {
-                parent,
-                size
-            }
+            UnionFind { parent, size }
         }
         pub fn unite(&mut self, x: usize, y: usize) {
             let x_root = self.root(x);
@@ -51,15 +48,15 @@ pub mod union_find {
             let parent = self.parent[x] as usize;
             let root = self.root(parent);
             self.parent[x] = root as i32;
-            return root;
+            root
         }
         pub fn union_size(&mut self, x: usize) -> usize {
             let root = self.root(x);
             let set_size = -1 * self.parent[root];
-            set_size as usize;
+            set_size as usize
         }
         pub fn size(&self) -> usize {
-            self.size;
+            self.size
         }
     }
     pub struct UndoUnionFind {
@@ -80,7 +77,8 @@ pub mod union_find {
         }
         pub fn init(&mut self) {
             self.stack.clear();
-            for (i, (parent, size)) in self.parent.iter_mut().zip(self.size.iter_mut()).enumerate() {
+            for (i, (parent, size)) in self.parent.iter_mut().zip(self.size.iter_mut()).enumerate()
+            {
                 *parent = i as u32;
                 *size = 1;
             }

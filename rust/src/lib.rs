@@ -27,4 +27,5 @@ pub mod scc;
 pub mod segment_tree;
 pub mod timer;
 pub mod treap;
+pub mod union_find;
 pub mod utils;
