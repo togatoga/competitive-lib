@@ -25,10 +25,11 @@ impl Solver {
     }
 }
 
-#[snippet]
+#[snippet(prefix = "#[allow(unused_imports)]\nuse crate::gap_traits::*;")]
 #[snippet(include = "macros")]
 #[snippet(include = "utils")]
 #[snippet(include = "solver")]
+#[snippet(include = "gap_traits")]
 fn main() {
     std::thread::Builder::new()
         .stack_size(64 * 1024 * 1024) // 64MB
