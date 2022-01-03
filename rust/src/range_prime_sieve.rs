@@ -1,8 +1,6 @@
 /// A range prime sieve answers primes have the range of [L, R).
 /// Space: O(R-L)
 pub mod range_prime_sieve {
-    use rand::seq::index::sample;
-
     #[derive(Debug, Clone, Default)]
     pub struct RangePrimeSieve {
         left: i64,
