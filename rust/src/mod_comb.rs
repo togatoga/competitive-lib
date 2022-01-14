@@ -7,7 +7,7 @@ pub mod mod_comb {
         Mod998244353,
     }
     impl PrimeModule {
-        fn value(&self) -> usize {
+        fn value(&self) -> i64 {
             match *self {
                 PrimeModule::Mod1000000007 => 1000000007,
                 PrimeModule::Mod998244353 => 998244353,
@@ -15,9 +15,9 @@ pub mod mod_comb {
         }
     }
     pub struct ModComb {
-        fact: Vec<usize>,
-        inv_fact: Vec<usize>,
-        module: usize,
+        fact: Vec<i64>,
+        inv_fact: Vec<i64>,
+        module: i64,
     }
 
     #[allow(dead_code)]
@@ -28,11 +28,11 @@ pub mod mod_comb {
             fact[0] = 1;
             let module = module.value();
             for i in 1..size + 1 {
-                fact[i] = i * fact[i - 1] % module;
+                fact[i] = i as i64 * fact[i - 1] % module;
             }
             inv_fact[0] = 1;
             for i in 1..size + 1 {
-                inv_fact[i] = ModComb::mod_pow(fact[i], module - 2, module);
+                inv_fact[i] = ModComb::mod_pow(fact[i], (module - 2) as usize, module);
             }
             ModComb {
                 fact,
@@ -41,30 +41,30 @@ pub mod mod_comb {
             }
         }
 
-        pub fn permutation(&self, n: usize, k: usize) -> usize {
+        pub fn permutation(&self, n: usize, k: usize) -> i64 {
             assert!(n >= k);
             self.fact[n] % self.module * self.inv_fact(n - k) % self.module
         }
-        pub fn combination(&self, n: usize, k: usize) -> usize {
+        pub fn combination(&self, n: usize, k: usize) -> i64 {
             assert!(n >= k);
             self.fact[n] * self.inv_fact[k] % self.module * self.inv_fact[n - k] % self.module
         }
 
-        pub fn fact(&self, x: usize) -> usize {
+        pub fn fact(&self, x: usize) -> i64 {
             self.fact[x]
         }
-        pub fn inv(&self, x: usize) -> usize {
-            ModComb::mod_pow(x, self.module - 2, self.module)
+        pub fn inv(&self, x: usize) -> i64 {
+            ModComb::mod_pow(x as i64, (self.module - 2) as usize, self.module)
         }
-        pub fn inv_fact(&self, x: usize) -> usize {
+        pub fn inv_fact(&self, x: usize) -> i64 {
             self.inv_fact[x]
         }
 
-        fn mod_pow(x: usize, n: usize, module: usize) -> usize {
+        fn mod_pow(x: i64, n: usize, module: i64) -> i64 {
             if n == 0 {
                 return 1;
             }
-            let mut res: usize = ModComb::mod_pow(x, n >> 1, module) % module;
+            let mut res = ModComb::mod_pow(x, n >> 1, module) % module;
             res = (res * res) % module;
             if n & 1 == 1 {
                 res *= x;
@@ -94,7 +94,7 @@ mod test {
         assert_eq!(mod_comb.permutation(10, 3), 720);
         assert_eq!(mod_comb.permutation(1000, 999), 641419708);
 
-        const MOD: usize = 1e9 as usize + 7;
+        const MOD: i64 = 1e9 as i64 + 7;
         //inv fact
         for i in 1..1000 {
             let one = mod_comb.fact(i) * mod_comb.inv_fact(i) % MOD;
