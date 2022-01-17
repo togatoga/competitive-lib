@@ -1,4 +1,5 @@
 pub mod binary_search;
+pub mod binary_trie;
 pub mod binomial_coefficient_mod_prime;
 pub mod btree_multiset;
 pub mod dinic;
