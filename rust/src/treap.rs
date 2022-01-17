@@ -3,12 +3,12 @@ use cargo_snippet::snippet;
 #[snippet]
 pub mod treap {
     use std::cmp::Ordering;
-
+    type BNode<T> = Box<Node<T>>;
     #[derive(Debug, Clone)]
     struct Node<T> {
         key: T,
-        left: Option<Box<Node<T>>>,
-        right: Option<Box<Node<T>>>,
+        left: Option<BNode<T>>,
+        right: Option<BNode<T>>,
         priority: u32,
         size: usize,
     }
@@ -41,26 +41,25 @@ pub mod treap {
         }
         fn kth(&self, k: usize) -> Option<&T> {
             let left_size = size(&self.left);
-            if left_size > k {
-                self.left.as_ref().and_then(|left| left.kth(k))
-            } else if left_size == k {
-                Some(&self.key)
-            } else {
-                self.right
+            match left_size.cmp(&k) {
+                Ordering::Greater => self.left.as_ref().and_then(|left| left.kth(k)),
+                Ordering::Equal => Some(&self.key),
+                Ordering::Less => self
+                    .right
                     .as_ref()
-                    .and_then(|right| right.kth(k - left_size - 1))
+                    .and_then(|right| right.kth(k - left_size - 1)),
             }
         }
     }
 
-    fn size<T>(node: &Option<Box<Node<T>>>) -> usize {
+    fn size<T>(node: &Option<BNode<T>>) -> usize {
         node.as_ref().map_or(0, |node| node.size)
     }
 
     /// `TreapSet` a set based on a treap.
     #[derive(Debug, Clone)]
     pub struct TreapSet<T> {
-        root: Option<Box<Node<T>>>,
+        root: Option<BNode<T>>,
         rng: Xorshift128,
     }
 
@@ -97,7 +96,7 @@ pub mod treap {
         /// If the tree did not have this value present, `true` is returned.
         /// Otherwise, `false` is returned.
         pub fn insert(&mut self, value: T) -> bool {
-            let priority = self.rng.next();
+            let priority = self.rng.gen();
             if let Some(root) = self.root.take() {
                 let (contained, k) = root.find(&value);
                 if !contained {
@@ -154,12 +153,12 @@ pub mod treap {
         }
     }
 
-    fn insert<T: Ord>(node: Option<Box<Node<T>>>, k: usize, key: T, priority: u32) -> Box<Node<T>> {
+    fn insert<T: Ord>(node: Option<BNode<T>>, k: usize, key: T, priority: u32) -> BNode<T> {
         let (left, right) = split(node, k);
         merge(merge(left, Some(Box::new(Node::new(key, priority)))), right).expect("empty node")
     }
 
-    fn remove<T: Ord>(node: Option<Box<Node<T>>>, k: usize) -> Option<Box<Node<T>>> {
+    fn remove<T: Ord>(node: Option<BNode<T>>, k: usize) -> Option<BNode<T>> {
         let (left, right) = split(node, k + 1);
         let (left, _) = split(left, k);
         match merge(left, right) {
@@ -171,10 +170,7 @@ pub mod treap {
         }
     }
 
-    fn merge<T: Ord>(
-        left: Option<Box<Node<T>>>,
-        right: Option<Box<Node<T>>>,
-    ) -> Option<Box<Node<T>>> {
+    fn merge<T: Ord>(left: Option<BNode<T>>, right: Option<BNode<T>>) -> Option<BNode<T>> {
         match (left, right) {
             (Some(mut left), Some(mut right)) => {
                 if left.priority > right.priority {
@@ -193,10 +189,7 @@ pub mod treap {
         }
     }
 
-    fn split<T: Ord>(
-        node: Option<Box<Node<T>>>,
-        k: usize,
-    ) -> (Option<Box<Node<T>>>, Option<Box<Node<T>>>) {
+    fn split<T: Ord>(node: Option<BNode<T>>, k: usize) -> (Option<BNode<T>>, Option<BNode<T>>) {
         if let Some(mut node) = node {
             let left_size = size(&node.left);
             if k <= left_size {
@@ -242,7 +235,7 @@ pub mod treap {
             xorshift
         }
 
-        pub fn next(&mut self) -> u32 {
+        pub fn gen(&mut self) -> u32 {
             let t = self.x ^ (self.x << 11);
             self.x = self.y;
             self.y = self.z;
@@ -329,10 +322,8 @@ mod tests {
                     set.remove(&x);
                     assert!(treap.remove(&x));
                     assert!(!treap.remove(&x));
-                    assert!(!treap.contains(&x));
-                } else {
-                    assert!(!treap.contains(&x));
                 }
+                assert!(!treap.contains(&x));
             } else {
                 // insert
                 if set.contains(&x) {
@@ -342,8 +333,8 @@ mod tests {
                     assert!(treap.insert(x));
                     assert!(!treap.insert(x));
                     set.insert(x);
-                    assert!(treap.contains(&x));
                 }
+                assert!(treap.contains(&x));
             }
 
             assert_eq!(treap.len(), set.len());

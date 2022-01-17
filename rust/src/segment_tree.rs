@@ -75,23 +75,23 @@ mod test {
 
     #[test]
     fn random_update() {
-        let n = 1000;
+        const N: usize = 1000;
         //max segment tree
-        let mut seg = SegmentTree::new(n, 0, std::cmp::max);
-        let mut v = vec![0; n];
+        let mut seg = SegmentTree::new(N, 0, std::cmp::max);
+        let mut values = vec![0; N];
         for _ in 0..10000 {
             let value = thread_rng().gen_range(0, 1000);
-            let k = thread_rng().gen_range(0, n);
-            v[k] = value;
+            let k = thread_rng().gen_range(0, N);
+            values[k] = value;
             seg.update(k, value);
             //[0, n)
-            assert_eq!(seg.query(0, n), *v.iter().max().unwrap());
+            assert_eq!(seg.query(0, N), *values.iter().max().unwrap());
 
-            let l = thread_rng().gen_range(0, n);
-            let r = thread_rng().gen_range(l, n);
+            let l = thread_rng().gen_range(0, N);
+            let r = thread_rng().gen_range(l, N);
             //two point
             //[l, r + 1)
-            let x = v.iter().skip(l).take(r - l + 1).max().unwrap();
+            let x = values.iter().skip(l).take(r - l + 1).max().unwrap();
             assert_eq!(seg.query(l, r + 1), *x);
         }
     }

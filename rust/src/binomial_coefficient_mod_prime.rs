@@ -24,9 +24,9 @@ pub mod binomial_coefficient_mod_prime {
             *y = 0;
             return a;
         }
-        let d = extended_gcd(b, a % b, y, x);
+        let gcd = extended_gcd(b, a % b, y, x);
         *y -= a / b * *x;
-        d
+        gcd
     }
 
     fn module(a: i64, m: i64) -> i64 {
@@ -83,15 +83,15 @@ pub mod binomial_coefficient_mod_prime {
             let mut e1 = 0;
             let mut e2 = 0;
             let mut e3 = 0;
-            let x = self.fact(n, &mut e1);
-            let y = self.fact(k, &mut e2);
-            let z = self.fact(n - k, &mut e3);
+            let v1 = self.fact(n, &mut e1);
+            let v2 = self.fact(k, &mut e2);
+            let v3 = self.fact(n - k, &mut e3);
 
             assert!(e1 >= e2 + e3);
             if e1 != e2 + e3 {
                 0
             } else {
-                x % self.prime_mod * inv_module(y * z, self.prime_mod) % self.prime_mod
+                v1 % self.prime_mod * inv_module(v2 * v3, self.prime_mod) % self.prime_mod
             }
         }
     }

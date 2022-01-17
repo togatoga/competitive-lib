@@ -56,7 +56,7 @@ pub mod primal_dual {
             self.graph[to].push(Edge::new(from, 0, -cost, from_rev, true));
         }
 
-        pub fn min_cost_flow(&mut self, s: usize, t: usize, mut f: Flow) -> Option<Cost> {
+        pub fn min_cost_flow(&mut self, src: usize, target: usize, mut f: Flow) -> Option<Cost> {
             let n = self.graph.len();
             self.potential.iter_mut().for_each(|x| *x = 0);
             self.pre_v.iter_mut().for_each(|x| *x = None);
@@ -65,9 +65,9 @@ pub mod primal_dual {
             let mut result = 0;
             while f > 0 {
                 self.min_cost.iter_mut().for_each(|x| *x = INF);
-                self.min_cost[s] = 0;
+                self.min_cost[src] = 0;
 
-                que.push(Reverse((0, s)));
+                que.push(Reverse((0, src)));
                 while let Some(p) = que.pop() {
                     let (cost, pos) = p.0;
                     if self.min_cost[pos] < cost {
@@ -84,14 +84,14 @@ pub mod primal_dual {
                         }
                     }
                 }
-                if self.min_cost[t] == INF {
+                if self.min_cost[target] == INF {
                     return None;
                 }
                 (0..n).for_each(|i| self.potential[i] += self.min_cost[i]);
                 let mut add_flow = f;
                 {
-                    let mut v = t;
-                    while v != s {
+                    let mut v = target;
+                    while v != src {
                         let pre_v = self.pre_v[v].unwrap();
                         let pre_e = self.pre_e[v].unwrap();
                         add_flow = std::cmp::min(add_flow, self.graph[pre_v][pre_e].cap);
@@ -99,10 +99,10 @@ pub mod primal_dual {
                     }
                     f -= add_flow;
                 }
-                result += add_flow * self.potential[t];
+                result += add_flow * self.potential[target];
                 {
-                    let mut v = t;
-                    while v != s {
+                    let mut v = target;
+                    while v != src {
                         let pre_v = self.pre_v[v].unwrap();
                         let pre_e = self.pre_e[v].unwrap();
                         self.graph[pre_v][pre_e].cap -= add_flow;

@@ -2,8 +2,14 @@ use cargo_snippet::snippet;
 use rust::fastio::fastio;
 
 #[allow(dead_code)]
-#[derive(PartialEq, PartialOrd)]
+#[derive(PartialEq)]
 pub struct NonNan(pub f64);
+
+impl PartialOrd for NonNan {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.0.partial_cmp(&other.0)
+    }
+}
 impl Eq for NonNan {}
 impl Ord for NonNan {
     fn cmp(&self, other: &NonNan) -> std::cmp::Ordering {

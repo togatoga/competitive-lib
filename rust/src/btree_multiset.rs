@@ -265,15 +265,15 @@ mod tests {
         assert!(!mset.is_empty());
         assert_eq!(mset.len(), 4);
         assert_eq!(mset.unique_len(), 2);
-        assert_eq!(mset.contains(&0), true);
-        assert_eq!(mset.contains(&1), true);
+        assert!(mset.contains(&0));
+        assert!(mset.contains(&1));
         assert_eq!(mset.get(&0), Some((&0, 1)));
         assert_eq!(mset.get(&1), Some((&1, 3)));
 
         mset.remove(&1);
-        assert_eq!(mset.contains(&1), true);
+        assert!(mset.contains(&1));
         mset.remove_all(&1);
-        assert_eq!(mset.contains(&1), false);
+        assert!(!mset.contains(&1));
         assert_eq!(mset.len(), 1);
         mset.clear();
         assert!(mset.is_empty());

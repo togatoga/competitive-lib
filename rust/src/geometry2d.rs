@@ -1,5 +1,5 @@
 use cargo_snippet::snippet;
-#[allow(clippy::module_inception)]
+#[allow(clippy::module_inception, clippy::ptr_arg)]
 #[snippet]
 /// A 2D-geometry library
 pub mod geometry2d {
@@ -136,14 +136,13 @@ pub mod geometry2d {
             }
         });
         let mut qs = Polygon::with_capacity(2 * n);
-        for i in 0..n {
+        for &point in points.iter() {
             while qs.len() >= 2
-                && (qs[qs.len() - 1] - qs[qs.len() - 2]).cross(&(points[i] - qs[qs.len() - 1]))
-                    < EPS
+                && (qs[qs.len() - 1] - qs[qs.len() - 2]).cross(&(point - qs[qs.len() - 1])) < EPS
             {
                 qs.pop();
             }
-            qs.push(points[i]);
+            qs.push(point);
         }
         let t = qs.len();
         for i in (0..=n - 2).rev() {

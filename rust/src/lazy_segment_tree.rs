@@ -331,16 +331,16 @@ mod tests {
             let left = rng.gen_range(0, n);
             let right = rng.gen_range(left, n) + 1;
             let value = rng.gen_range(0, 100);
-            for i in left..right {
+            (left..right).for_each(|i| {
                 seq[i] += value;
-            }
+            });
             let seq_max = *seq.iter().skip(left).take(right - left).max().unwrap();
             seg.apply_range(left, right, value);
             let seg_max = seg.prod(left, right);
             assert_eq!(seq_max, seg_max);
-            for i in left..right {
+            (left..right).for_each(|i| {
                 assert_eq!(seg.prod(i, i + 1), seq[i]);
-            }
+            });
         });
     }
 
@@ -384,9 +384,9 @@ mod tests {
             let left = rng.gen_range(0, n);
             let right = rng.gen_range(left, n) + 1;
             let value = rng.gen_range(0, 100);
-            for i in left..right {
+            (left..right).for_each(|i| {
                 seq[i] *= value;
-            }
+            });
             let seq_total_mod = seq
                 .iter()
                 .skip(left)
@@ -395,9 +395,9 @@ mod tests {
             seg.apply_range(left, right, value);
             let seg_total_mod = seg.prod(left, right);
             assert_eq!(seq_total_mod, seg_total_mod);
-            for i in left..right {
+            (left..right).for_each(|i| {
                 assert_eq!(seg.prod(i, i + 1), seq[i]);
-            }
+            });
         });
     }
 }

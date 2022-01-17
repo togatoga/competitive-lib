@@ -105,9 +105,9 @@ pub mod fordfulkerson {
             }
             result
         }
-        fn dfs(&mut self, v: usize, t: usize, f: i64) -> Option<i64> {
-            if v == t {
-                return Some(f);
+        fn dfs(&mut self, v: usize, target: usize, flow: i64) -> Option<i64> {
+            if v == target {
+                return Some(flow);
             }
             self.seen[v] = true;
             let m: usize = self.graph.list[v].len();
@@ -119,7 +119,7 @@ pub mod fordfulkerson {
                 if e.cap == 0 {
                     continue;
                 }
-                let flow = self.dfs(e.to, t, std::cmp::min(f, e.cap));
+                let flow = self.dfs(e.to, target, std::cmp::min(flow, e.cap));
                 if let Some(flow) = flow {
                     self.graph.run_flow(e.from, i, flow);
                     return Some(flow);

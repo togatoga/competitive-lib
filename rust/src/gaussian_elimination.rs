@@ -1,6 +1,6 @@
 use cargo_snippet::snippet;
-#[allow(clippy::module_inception)]
 #[snippet]
+#[allow(clippy::module_inception, clippy::many_single_char_names)]
 /// Gaussian elimination
 /// AC: https://atcoder.jp/contests/typical90/submissions/23197872
 pub mod gaussian_elimination {

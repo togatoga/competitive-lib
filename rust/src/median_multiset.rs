@@ -72,6 +72,11 @@ pub mod median_multiset {
             }
         }
 
+        /// Returns `true` if the set is empty.
+        pub fn is_empty(&self) -> bool {
+            self.len() == 0
+        }
+
         /// Returns the number of elements in the set.
         pub fn len(&self) -> usize {
             self.lower.len() + self.upper.len()

@@ -53,7 +53,7 @@ pub mod union_find {
         }
         pub fn union_size(&mut self, x: usize) -> usize {
             let root = self.root(x);
-            let set_size = -1 * self.parent[root];
+            let set_size = -self.parent[root];
             set_size as usize
         }
         pub fn size(&self) -> usize {

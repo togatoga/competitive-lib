@@ -39,9 +39,9 @@ pub mod matrix {
             let h = x.len();
             let w = x[0].len();
             let mut matrix = Matrix::new(h, w);
-            for i in 0..h {
-                for j in 0..w {
-                    *matrix.get_mut(i, j) = x[i][j];
+            for (i, values) in x.iter().enumerate() {
+                for (j, value) in values.iter().enumerate() {
+                    *matrix.get_mut(i, j) = *value;
                 }
             }
             matrix
@@ -172,9 +172,10 @@ mod tests {
         let m2 = Matrix::from(b);
         let m3 = m1.dot(&m2);
         let c = vec![vec![8, 3], vec![5, 2]];
-        for i in 0..m3.height() {
-            for j in 0..m3.width() {
-                assert_eq!(c[i][j], *m3.get(i, j));
+
+        for (i, values) in c.iter().enumerate() {
+            for (j, value) in values.iter().enumerate() {
+                assert_eq!(*value, *m3.get(i, j));
             }
         }
 
@@ -184,9 +185,9 @@ mod tests {
         let m2 = Matrix::from(b);
         let m3 = m1.dot(&m2);
         let c = vec![vec![15, 18, 21]];
-        for i in 0..m3.height() {
-            for j in 0..m3.width() {
-                assert_eq!(c[i][j], *m3.get(i, j));
+        for (i, values) in c.iter().enumerate() {
+            for (j, value) in values.iter().enumerate() {
+                assert_eq!(*value, *m3.get(i, j));
             }
         }
     }

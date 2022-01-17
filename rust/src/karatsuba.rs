@@ -1,12 +1,14 @@
 use cargo_snippet::snippet;
-#[allow(clippy::module_inception)]
+#[allow(clippy::module_inception, clippy::many_single_char_names)]
 #[snippet]
 /// c[i + j] = a[i] * a[j] (1 <= i <= n, 1 <= j <= m)
 /// @verified: https://atcoder.jp/contests/atc001/submissions/24732479
 pub mod karatsuba {
+
+    use std::marker::Copy;
     fn karatsuba<T>(a: &[T], b: &[T], c: &mut [T], buf: &mut [T])
     where
-        T: std::marker::Copy
+        T: Copy
             + std::ops::Add<Output = T>
             + std::ops::Sub<Output = T>
             + std::ops::Mul<Output = T>
@@ -23,11 +25,11 @@ pub mod karatsuba {
         }
         if n & 1 == 1 {
             karatsuba(&a[1..], &b[1..], &mut c[2..], buf);
-            let x = a[0];
-            let y = b[0];
-            c[0] = c[0] + x * y;
+            let v1 = a[0];
+            let v2 = b[0];
+            c[0] = c[0] + v1 * v2;
             for (c, (a, b)) in c[1..].iter_mut().zip(a[1..].iter().zip(b[1..].iter())) {
-                *c = *c + x * *b + *a * y;
+                *c = *c + v1 * *b + *a * v2;
             }
             return;
         }
@@ -56,7 +58,7 @@ pub mod karatsuba {
 
     pub fn multiply<T>(a: &[T], b: &[T]) -> Vec<T>
     where
-        T: std::marker::Copy
+        T: Copy
             + std::ops::Add<Output = T>
             + std::ops::Sub<Output = T>
             + std::ops::Mul<Output = T>

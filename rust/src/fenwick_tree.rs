@@ -112,18 +112,18 @@ mod test {
             }
 
             let mut sum = 0;
-            for i in 0..n {
+            (0..n).for_each(|i| {
                 sum += v[i];
                 assert_eq!(sum, bit.sum(i + 1));
-            }
+            });
 
-            let l = thread_rng().gen_range(0, n);
-            let r = thread_rng().gen_range(l, n);
+            let left = thread_rng().gen_range(0, n);
+            let right = thread_rng().gen_range(left, n);
             sum = 0;
-            for i in l..r {
+            (left..right).for_each(|i| {
                 sum += v[i];
-                assert_eq!(sum, bit.query(l, i + 1));
-            }
+                assert_eq!(sum, bit.query(left, i + 1));
+            });
         }
     }
 }
