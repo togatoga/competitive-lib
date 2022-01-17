@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet]
 pub mod treap {
     use std::cmp::Ordering;
@@ -280,8 +281,8 @@ mod tests {
         v.shuffle(&mut rng);
         for &i in v.iter() {
             assert!(treap.contains(&i));
-            assert_eq!(treap.remove(&i), true);
-            assert_eq!(treap.remove(&i), false);
+            assert!(treap.remove(&i));
+            assert!(!treap.remove(&i));
             assert!(!treap.contains(&i));
         }
     }
@@ -326,8 +327,8 @@ mod tests {
                 if set.contains(&x) {
                     assert!(treap.contains(&x));
                     set.remove(&x);
-                    assert_eq!(treap.remove(&x), true);
-                    assert_eq!(treap.remove(&x), false);
+                    assert!(treap.remove(&x));
+                    assert!(!treap.remove(&x));
                     assert!(!treap.contains(&x));
                 } else {
                     assert!(!treap.contains(&x));

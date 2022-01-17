@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet]
 /// A 2D-geometry library
 pub mod geometry2d {

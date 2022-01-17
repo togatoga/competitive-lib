@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet]
 /// B-Tree Multiset
 /// `BTreeMultiset` provides basic functions that `BTreeSet` has.

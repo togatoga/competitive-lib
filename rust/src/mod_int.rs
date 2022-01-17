@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet]
 /// Modular Integer
 /// NOTE

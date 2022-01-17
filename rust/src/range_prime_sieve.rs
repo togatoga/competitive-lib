@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet]
 /// A range prime sieve answers primes have the range of [L, R).
 /// Space: O((R-L) + sqrt(R))

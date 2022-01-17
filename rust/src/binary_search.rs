@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet(name = "binary_search")]
 pub mod binary_search {
     use std::cmp::Ordering;
@@ -84,11 +85,11 @@ mod tests {
                 let naive_search = |x: i32| {
                     let mut lower_result = None;
                     let mut upper_result = None;
-                    for i in 0..seq.len() {
-                        if lower_result.is_none() && x <= seq[i] {
+                    for (i, &v) in seq.iter().enumerate() {
+                        if lower_result.is_none() && x <= v {
                             lower_result = Some(i);
                         }
-                        if upper_result.is_none() && x < seq[i] {
+                        if upper_result.is_none() && x < v {
                             upper_result = Some(i);
                         }
                     }

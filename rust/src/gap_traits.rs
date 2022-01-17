@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet]
 /// These traits provides almost same methods that mordern Rust compiler provides and fill the gap between them.
 pub mod gap_traits {

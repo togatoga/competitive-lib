@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet]
 pub mod fastio {
     use std::collections::VecDeque;
@@ -20,7 +21,7 @@ pub mod fastio {
         }
 
         pub fn write<S: std::string::ToString>(&mut self, s: S) {
-            self.writer.write(s.to_string().as_bytes()).unwrap();
+            self.writer.write_all(s.to_string().as_bytes()).unwrap();
         }
         pub fn writeln<S: std::string::ToString>(&mut self, s: S) {
             self.write(s);

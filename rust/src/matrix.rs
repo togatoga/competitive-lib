@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet(name = "matrix")]
 pub mod matrix {
     use std::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};

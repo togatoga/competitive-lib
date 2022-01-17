@@ -1,5 +1,5 @@
 use cargo_snippet::snippet;
-
+#[allow(clippy::module_inception)]
 #[snippet]
 /// nCk mod p
 /// NOTE: p must be prime

@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet]
 pub mod utils {
     const DYX: [(isize, isize); 8] = [

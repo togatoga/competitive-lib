@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet]
 pub mod segment_tree {
     pub struct SegmentTree<T, F> {

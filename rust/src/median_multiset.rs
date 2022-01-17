@@ -1,5 +1,6 @@
 use crate::btree_multiset::btree_multiset::BTreeMultiSet;
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet(
     include = "btree_multiset",
     prefix = "use crate::btree_multiset::BTreeMultiSet;"

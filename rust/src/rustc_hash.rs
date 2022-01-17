@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet]
 pub mod rustc_hash {
     /// Permission is hereby granted, free of charge, to any

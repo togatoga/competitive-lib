@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet]
 /// MaxFlow O(N^2m)
 /// BipartiteMatching O(mn^(1/2))

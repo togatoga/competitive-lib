@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet]
 pub mod scc {
     //Verified: https://atcoder.jp/contests/practice2/submissions/18811349

@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet]
 /// c[i + j] = a[i] * a[j] (1 <= i <= n, 1 <= j <= m)
 /// @verified: https://atcoder.jp/contests/atc001/submissions/24732479

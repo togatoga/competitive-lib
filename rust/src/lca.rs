@@ -1,5 +1,5 @@
 use cargo_snippet::snippet;
-
+#[allow(clippy::module_inception)]
 #[snippet]
 //Lowest common ancestor
 pub mod lca {

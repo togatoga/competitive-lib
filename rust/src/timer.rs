@@ -1,7 +1,9 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet]
 pub mod timer {
     use std::time::{Duration, Instant};
+    #[derive(Default)]
     pub struct Timer {
         start: Option<Instant>,
     }

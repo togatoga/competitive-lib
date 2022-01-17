@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception)]
 #[snippet]
 /// Gaussian elimination
 /// AC: https://atcoder.jp/contests/typical90/submissions/23197872
