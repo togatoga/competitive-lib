@@ -247,15 +247,13 @@ mod test {
         let x = ModInt::new(-1);
         assert_eq!(x.val, 1_000_000_006);
     }
-
+    #[allow(clippy::identity_op)]
     #[test]
     fn test_div() {
         let x = ModInt::new(12);
         assert_eq!((x / 2).val, 6);
         assert_eq!((x / -2).val, 1_000_000_001);
-
         assert_eq!((ModInt::new(0) / 1).val, 0);
-
         assert_eq!((ModInt::new(1) / 42).val, 23_809_524);
     }
 
