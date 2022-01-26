@@ -113,7 +113,7 @@ mod test {
     #[test]
     fn test_mod_int_multiply() {
         use crate::mod_int::mod_int;
-        type ModInt = mod_int::ModInt<usize, mod_int::Mod1000000007>;
+        type ModInt = mod_int::ModInt<i64, mod_int::Mod1000000007>;
         let n = 10000;
         let mut rng = thread_rng();
         let a = (0..n)
