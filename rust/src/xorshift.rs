@@ -1,4 +1,5 @@
 use cargo_snippet::snippet;
+#[allow(clippy::module_inception, clippy::many_single_char_names)]
 #[snippet]
 /// The period is 2^128 - 1
 pub mod xorshift {
