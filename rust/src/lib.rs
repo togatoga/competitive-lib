@@ -31,3 +31,4 @@ pub mod timer;
 pub mod treap;
 pub mod union_find;
 pub mod utils;
+pub mod xorshift;
