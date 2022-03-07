@@ -8,7 +8,7 @@ use cargo_snippet::snippet;
 pub mod dinic {
     const INF: i64 = 1i64 << 60;
     use std::collections::VecDeque;
-    #[derive(Clone)]
+    #[derive(Clone, Debug)]
     pub struct Edge {
         to: usize,
         rev: usize,
@@ -105,6 +105,23 @@ pub mod dinic {
                 self.graph_indices[s] += 1;
             }
             0
+        }
+
+        /// Return a boolean array whether an index node can be reached from `s`.
+        pub fn min_cut(&self, s: usize) -> Vec<bool> {
+            let mut visited = vec![false; self.graph.len()];
+            let mut que = VecDeque::new();
+            visited[s] = true;
+            que.push_back(s);
+            while let Some(x) = que.pop_front() {
+                for edge in &self.graph[x] {
+                    if !visited[edge.to] && edge.cap > 0 {
+                        visited[edge.to] = true;
+                        que.push_back(edge.to);
+                    }
+                }
+            }
+            visited
         }
         pub fn max_flow(&mut self, s: usize, t: usize) -> i64 {
             let mut flow = 0;
