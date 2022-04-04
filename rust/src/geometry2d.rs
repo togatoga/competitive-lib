@@ -5,7 +5,7 @@ use cargo_snippet::snippet;
 pub mod geometry2d {
     use std::{
         mem::swap,
-        ops::{Add, Sub},
+        ops::{Add, Div, Sub},
     };
     const EPS: f64 = 1e-8;
     #[derive(Debug, Clone, Copy, Default)]
@@ -14,7 +14,7 @@ pub mod geometry2d {
         pub y: f64,
     }
     impl Point2d {
-        /// Makees a `Point2d` from (x, y)
+        /// Makes a `Point2d` from (x, y)
         pub fn new<T: Into<f64>>(x: T, y: T) -> Self {
             Point2d {
                 x: x.into(),
@@ -54,15 +54,24 @@ pub mod geometry2d {
             }
         }
     }
+    impl Div<f64> for Point2d {
+        type Output = Point2d;
+        fn div(self, rhs: f64) -> Self::Output {
+            Point2d {
+                x: self.x / rhs,
+                y: self.y / rhs,
+            }
+        }
+    }
     impl PartialEq for Point2d {
         fn eq(&self, other: &Self) -> bool {
-            self.x == other.x && self.y == other.y
+            (*self - *other).norm().abs() < EPS
         }
     }
     impl Eq for Point2d {}
     impl Ord for Point2d {
         fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-            if (self.x - other.x).abs() < std::f64::EPSILON {
+            if (self.x - other.x).abs() < EPS {
                 self.y.partial_cmp(&other.y).unwrap()
             } else {
                 self.x.partial_cmp(&other.x).unwrap()
@@ -75,6 +84,61 @@ pub mod geometry2d {
         }
     }
     pub type Polygon = Vec<Point2d>;
+    #[derive(Debug, Clone, Copy, Default)]
+    pub struct Circle {
+        center: Point2d,
+        radius: f64,
+    }
+
+    impl Circle {
+        /// Makes a `Radius` from (x, y, radius)
+        pub fn new<T: Into<f64>>(x: T, y: T, radius: T) -> Self {
+            Circle {
+                center: Point2d::new(x, y),
+                radius: radius.into(),
+            }
+        }
+
+        /// Returns points of intersection with circle if exists.
+        /// The number of intersection must be one or two.
+        pub fn intersection_with_circle(&self, other: &Circle) -> Option<Vec<Point2d>> {
+            let (p1, p2) = (self.center, other.center);
+            let (r1, r2) = (self.radius, other.radius);
+            let dist = (p1 - p2).norm().abs();
+            // same point
+            if dist < EPS {
+                return None;
+            }
+            // separeted
+            if dist - (r1 + r2) > EPS {
+                return None;
+            }
+
+            // inclusion
+            if EPS < (r1 - r2).abs() - dist {
+                return None;
+            }
+
+            let rcos = (dist * dist + r1 * r1 - r2 * r2) / (2. * dist);
+            let rsin = (r1 * r1 - rcos * rcos).sqrt();
+            let e = (p2 - p1) / dist;
+
+            let mut points = Vec::with_capacity(2);
+            // rotate and scale
+            // |r*cos, -r*sin| |e.x|
+            // |r*sin,  r*cos| |e.y|
+            let rotate_and_scale = |e: Point2d, rcos: f64, rsin: f64| -> Point2d {
+                Point2d::new(e.x * rcos - e.y * rsin, e.x * rsin + e.y * rcos)
+            };
+            let cp1 = p1 + rotate_and_scale(e, rcos, rsin);
+            let cp2 = p1 + rotate_and_scale(e, rcos, -rsin);
+            points.push(cp1);
+            if !cp1.eq(&cp2) {
+                points.push(cp2);
+            }
+            Some(points)
+        }
+    }
 
     #[derive(Debug, Clone, Copy)]
     /// `Position` represents that a given point is
