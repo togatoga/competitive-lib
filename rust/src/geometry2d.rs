@@ -104,7 +104,7 @@ pub mod geometry2d {
         pub fn intersection_with_circle(&self, other: &Circle) -> Option<Vec<Point2d>> {
             let (p1, p2) = (self.center, other.center);
             let (r1, r2) = (self.radius, other.radius);
-            let dist = (p1 - p2).norm().abs();
+            let dist = (p1 - p2).norm().sqrt();
             // same point
             if dist < EPS {
                 return None;
