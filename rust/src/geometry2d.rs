@@ -7,7 +7,7 @@ pub mod geometry2d {
         mem::swap,
         ops::{Add, Div, Sub},
     };
-    const EPS: f64 = 1e-8;
+    pub const EPS: f64 = 1e-8;
     #[derive(Debug, Clone, Copy, Default)]
     pub struct Point2d {
         pub x: f64,
@@ -86,23 +86,23 @@ pub mod geometry2d {
     pub type Polygon = Vec<Point2d>;
     #[derive(Debug, Clone, Copy, Default)]
     pub struct Circle {
-        center: Point2d,
-        radius: f64,
+        pub point: Point2d,
+        pub radius: f64,
     }
 
     impl Circle {
         /// Makes a `Radius` from (x, y, radius)
-        pub fn new<T: Into<f64>>(x: T, y: T, radius: T) -> Self {
+        pub fn new<T: Into<f64>>(x: T, y: T, r: T) -> Self {
             Circle {
-                center: Point2d::new(x, y),
-                radius: radius.into(),
+                point: Point2d::new(x, y),
+                radius: r.into(),
             }
         }
 
         /// Returns points of intersection with circle if exists.
         /// The number of intersection must be one or two.
         pub fn intersection_with_circle(&self, other: &Circle) -> Option<Vec<Point2d>> {
-            let (p1, p2) = (self.center, other.center);
+            let (p1, p2) = (self.point, other.point);
             let (r1, r2) = (self.radius, other.radius);
             let dist = (p1 - p2).norm().sqrt();
             // same point
