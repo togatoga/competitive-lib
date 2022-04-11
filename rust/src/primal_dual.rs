@@ -30,6 +30,7 @@ pub mod primal_dual {
             }
         }
     }
+    #[derive(Clone)]
     pub struct PrimalDual {
         graph: Vec<Vec<Edge>>,
         potential: Vec<Cost>,
@@ -55,7 +56,34 @@ pub mod primal_dual {
             self.graph[from].push(Edge::new(to, cap, cost, to_rev, false));
             self.graph[to].push(Edge::new(from, 0, -cost, from_rev, true));
         }
-
+        /// Caluculate the minimum cost of the flow `f` from `src` to `target`.
+        /// This function can be called repeatedly and returns the difference minimum cost of the flow.
+        /// # Examples
+        /// ```
+        /// let n: usize = 4;
+        /// let f: Flow = 2;
+        /// let mut min_cost_flow = primal_dual::PrimalDual::new(n);
+        /// min_cost_flow.add_edge(0, 1, 2, 1);
+        /// min_cost_flow.add_edge(0, 2, 1, 2);
+        /// min_cost_flow.add_edge(1, 2, 1, 1);
+        /// min_cost_flow.add_edge(1, 3, 1, 3);
+        /// min_cost_flow.add_edge(2, 3, 2, 1);
+        /// let mut min_cost_flow_mul = min_cost_flow.clone();
+        /// let result = min_cost_flow.min_cost_flow(0, n - 1, f);
+        /// 
+        /// assert_eq!(result, Some(6));
+        /// let f1 = f / 2;
+        /// let f2 = f - f / 2;
+        /// let result1 = min_cost_flow_mul
+        ///     .min_cost_flow(0, n - 1, f1)
+        ///     .expect("no value");
+        /// let result2 = min_cost_flow_mul
+        ///     .min_cost_flow(0, n - 1, f2)
+        ///     .expect("no value");
+        /// assert_eq!(Some(result1 + result2), result);
+        /// }
+        ///
+        /// ```
         pub fn min_cost_flow(&mut self, src: usize, target: usize, mut f: Flow) -> Option<Cost> {
             let n = self.graph.len();
             self.potential.iter_mut().for_each(|x| *x = 0);
@@ -133,7 +161,18 @@ mod tests {
         min_cost_flow.add_edge(1, 2, 1, 1);
         min_cost_flow.add_edge(1, 3, 1, 3);
         min_cost_flow.add_edge(2, 3, 2, 1);
-        let res = min_cost_flow.min_cost_flow(0, n - 1, f);
-        assert_eq!(res, Some(6));
+        let mut min_cost_flow_mul = min_cost_flow.clone();
+        let result = min_cost_flow.min_cost_flow(0, n - 1, f);
+        assert_eq!(result, Some(6));
+
+        let f1 = f / 2;
+        let f2 = f - f / 2;
+        let result1 = min_cost_flow_mul
+            .min_cost_flow(0, n - 1, f1)
+            .expect("no value");
+        let result2 = min_cost_flow_mul
+            .min_cost_flow(0, n - 1, f2)
+            .expect("no value");
+        assert_eq!(Some(result1 + result2), result);
     }
 }
