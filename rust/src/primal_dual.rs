@@ -59,7 +59,7 @@ pub mod primal_dual {
         /// Caluculate the minimum cost of the flow `f` from `src` to `target`.
         /// This function can be called repeatedly and returns the difference minimum cost of the flow.
         /// # Examples
-        /// ```
+        /// ```ignore
         /// let n: usize = 4;
         /// let f: Flow = 2;
         /// let mut min_cost_flow = primal_dual::PrimalDual::new(n);
@@ -70,7 +70,7 @@ pub mod primal_dual {
         /// min_cost_flow.add_edge(2, 3, 2, 1);
         /// let mut min_cost_flow_mul = min_cost_flow.clone();
         /// let result = min_cost_flow.min_cost_flow(0, n - 1, f);
-        /// 
+        ///
         /// assert_eq!(result, Some(6));
         /// let f1 = f / 2;
         /// let f2 = f - f / 2;
@@ -81,8 +81,6 @@ pub mod primal_dual {
         ///     .min_cost_flow(0, n - 1, f2)
         ///     .expect("no value");
         /// assert_eq!(Some(result1 + result2), result);
-        /// }
-        ///
         /// ```
         pub fn min_cost_flow(&mut self, src: usize, target: usize, mut f: Flow) -> Option<Cost> {
             let n = self.graph.len();
