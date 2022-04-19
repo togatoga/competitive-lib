@@ -297,7 +297,7 @@ pub mod lazy_segment_tree {
 
 #[cfg(test)]
 mod tests {
-    use super::lazy_segment_tree::*;
+    use super::lazy_segment_tree::{self, *};
     use rand::{thread_rng, Rng};
     struct MaxAdd;
     impl MapMonoid for MaxAdd {
@@ -399,5 +399,66 @@ mod tests {
                 assert_eq!(seg.prod(i, i + 1), seq[i]);
             });
         });
+    }
+
+    #[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
+    struct UpdateAndSumValue {
+        value: i64,
+        size: i64,
+    }
+    impl Monoid for Additive<UpdateAndSumValue> {
+        type S = UpdateAndSumValue;
+        fn identity() -> Self::S {
+            UpdateAndSumValue { value: 0, size: 0 }
+        }
+        fn binary_operation(a: &Self::S, b: &Self::S) -> Self::S {
+            UpdateAndSumValue {
+                value: a.value + b.value,
+                size: a.size + b.size,
+            }
+        }
+    }
+
+    impl MapMonoid for UpdateAndSumValue {
+        type M = Additive<UpdateAndSumValue>;
+        type F = i64;
+        fn identity_map() -> Self::F {
+            1i64 << 62
+        }
+        fn mapping(&f: &Self::F, &x: &UpdateAndSumValue) -> UpdateAndSumValue {
+            if f == UpdateAndSumValue::identity_map() {
+                x
+            } else {
+                UpdateAndSumValue {
+                    value: x.size * f,
+                    size: x.size,
+                }
+            }
+        }
+        fn composition(f: &Self::F, g: &Self::F) -> Self::F {
+            if *f == UpdateAndSumValue::identity_map() {
+                *g
+            } else {
+                *f
+            }
+        }
+    }
+
+    /// Range Update and Range Sum
+    /// update(s, t, x): As,As1,As2,...Ast -> x
+    /// getSum(s, t): As+As1+As2+...+Ast
+    #[test]
+    fn test_range_update_and_range_sum() {
+        let mut seg = lazy_segment_tree::LazySegMentTree::<UpdateAndSumValue>::new(6);
+        for i in 0..6 {
+            seg.set(i, UpdateAndSumValue { value: 0, size: 1 });
+        }
+        seg.apply_range(1, 4, 1);
+        seg.apply_range(2, 5, -2);
+        assert_eq!(seg.prod(0, 6).value, -5);
+        assert_eq!(seg.prod(0, 2).value, 1);
+        seg.apply_range(3, 6, 3);
+        assert_eq!(seg.prod(3, 5).value, 6);
+        assert_eq!(seg.prod(0, 6).value, 8);
     }
 }
