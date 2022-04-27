@@ -1,7 +1,7 @@
 use cargo_snippet::snippet;
 #[allow(clippy::module_inception)]
 #[snippet]
-//Lowest common ancestor
+/// Lowest common ancestor
 pub mod lca {
     pub struct Lca {
         pub parents: Vec<Vec<Option<usize>>>, //parents[k][u]: A parent has 2^k distance from u node
@@ -9,6 +9,7 @@ pub mod lca {
     }
 
     impl Lca {
+        /// Create a new `Lca` struct
         pub fn new(root: usize, n: usize, edges: &[Vec<usize>]) -> Lca {
             let mut k = 1;
             while (1 << k) < n {
@@ -41,8 +42,18 @@ pub mod lca {
             }
         }
 
-        //Get an index lca(u, v)
-        //logn
+        /// Get the distance from `u` to `v`
+        pub fn distance(&self, u: usize, v: usize) -> usize {
+            self.dists[u] + self.dists[v] - 2 * self.dists[self.query(u, v)]
+        }
+
+        /// Returns a boolean whether `p` is on the path from `u` to `v`
+        pub fn is_on_path(&self, u: usize, v: usize, p: usize) -> bool {
+            self.distance(u, p) + self.distance(p, v) == self.distance(u, v)
+        }
+
+        /// Get the lowest common ancestor of `u` and `v` LCA(u, v)
+        /// log(n)
         pub fn query(&self, u: usize, v: usize) -> usize {
             let (mut u, mut v) = if self.dists[u] < self.dists[v] {
                 (v, u)
