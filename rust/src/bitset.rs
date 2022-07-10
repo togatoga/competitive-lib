@@ -1,5 +1,6 @@
 use cargo_snippet::snippet;
 #[snippet]
+#[allow(clippy::module_inception)]
 pub mod bitset {
     const TRUE: &bool = &true;
     const FALSE: &bool = &false;
@@ -210,14 +211,14 @@ mod tests {
         let mut v = vec![false; size];
         let mut rng = StdRng::seed_from_u64(123);
 
-        for i in 0..size {
+        for (i, v) in v.iter_mut().enumerate() {
             let b = rng.next_u32() % 2 == 0;
             set.set(i, b);
-            v[i] = b;
+            *v = b;
         }
 
-        for i in 0..size {
-            assert_eq!(set[i], v[i]);
+        for (i, v) in v.iter().enumerate() {
+            assert_eq!(set[i], *v);
         }
     }
 
@@ -228,21 +229,21 @@ mod tests {
             let mut v = vec![false; size];
             let mut rng = StdRng::seed_from_u64(123);
 
-            for i in 0..size {
+            for (i, v) in v.iter_mut().enumerate() {
                 let b = rng.next_u32() % 2 == 0;
                 set.set(i, b);
-                v[i] = b;
+                *v = b;
             }
             for i in (shift..v.len()).rev() {
                 v[i] = v[i - shift];
             }
-            for i in 0..std::cmp::min(size, shift) {
-                v[i] = false;
+            for v in v.iter_mut().take(std::cmp::min(size, shift)) {
+                *v = false;
             }
 
             set <<= shift;
-            for i in 0..size {
-                assert_eq!(set[i], v[i]);
+            for (i, v) in v.iter().enumerate() {
+                assert_eq!(set[i], *v);
             }
         };
 
@@ -266,10 +267,10 @@ mod tests {
             let mut v = vec![false; size];
             let mut rng = StdRng::seed_from_u64(1234);
 
-            for i in 0..size {
+            for (i, v) in v.iter_mut().enumerate() {
                 let b = rng.next_u32() % 2 == 0;
                 set.set(i, b);
-                v[i] = b;
+                *v = b;
             }
 
             let s = if size >= shift { size - shift } else { 0 };
@@ -278,8 +279,8 @@ mod tests {
                 v[i] = v[i + shift];
             }
 
-            for i in s..size {
-                v[i] = false;
+            for v in v.iter_mut().take(size).skip(s) {
+                *v = false;
             }
 
             set >>= shift;
