@@ -50,9 +50,9 @@ pub mod gcd {
     }
     gcd_signed_impl!(i32 i64);
     gcd_unsigned_impl!(usize u32 u64);
-    // A return value is gcd(a, b)
-    // ax + by = gcd(a, b)
-    // this function sets x and y to satisfiy above formula.
+    /// A return value is gcd(a, b)
+    /// ax + by = gcd(a, b)
+    /// this function sets x and y to satisfiy above formula.
     pub fn extended_gcd(a: i64, b: i64, x: &mut i64, y: &mut i64) -> i64 {
         if b == 0 {
             *x = 1;
@@ -68,9 +68,9 @@ pub mod gcd {
         (a % m + m) % m
     }
 
-    // find a^-1 (a^-1*a == 1 mod m)
-    // a and m must be relative primes.
-    // But m isn't necessariliy prime
+    /// find a^-1 (a^-1*a == 1 mod m)
+    /// a and m must be relative primes.
+    /// But m isn't necessariliy prime
     pub fn inv_module(a: i64, m: i64) -> i64 {
         let mut x: i64 = 0;
         let mut y: i64 = 0;
