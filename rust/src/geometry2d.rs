@@ -5,8 +5,9 @@ use cargo_snippet::snippet;
 pub mod geometry2d {
     use std::{
         mem::swap,
-        ops::{Add, Div, Sub},
+        ops::{Add, Div, Mul, Sub},
     };
+
     pub const EPS: f64 = 1e-8;
     #[derive(Debug, Clone, Copy, Default)]
     pub struct Point2d {
@@ -51,6 +52,16 @@ pub mod geometry2d {
             Point2d {
                 x: self.x - rhs.x,
                 y: self.y - rhs.y,
+            }
+        }
+    }
+
+    impl Mul<f64> for Point2d {
+        type Output = Point2d;
+        fn mul(self, rhs: f64) -> Self::Output {
+            Point2d {
+                x: self.x * rhs,
+                y: self.y * rhs,
             }
         }
     }
@@ -186,6 +197,75 @@ pub mod geometry2d {
         }
         true
     }
+
+    /// Returns a minimum radius `Circle` enclsoing given all points.
+    /// Expected: O(n)
+    pub fn smallest_enclosing_circle(points: &Vec<Point2d>, seed: u32) -> Circle {
+        let n = points.len();
+        assert!(n >= 1);
+        if n == 1 {
+            return Circle::new(points[0].x, points[0].y, 0.0);
+        }
+        //shuffle
+        let mut points = points.clone();
+        let mut rng = xorshift::Xorshift128::new(seed);
+        for i in 0..n {
+            points.swap(i, rng.gen() as usize % n);
+        }
+        let points = points;
+
+        let make_circle_3 = |a: Point2d, b: Point2d, c: Point2d| -> Circle {
+            let d1 = (b - c).norm();
+            let d2 = (c - a).norm();
+            let d3 = (a - b).norm();
+            let s = (b - a).cross(&(c - a));
+
+            let p = (a * d1 * (d2 + d3 - d1) + b * d2 * (d3 + d1 - d2) + c * d3 * (d1 + d2 - d3))
+                / (4.0 * s * s);
+            let r = (p - a).norm().sqrt();
+            Circle {
+                point: p,
+                radius: r,
+            }
+        };
+
+        let make_circle_2 = |a: Point2d, b: Point2d| -> Circle {
+            let c = (a + b) / 2.0;
+            let r = (a - c).norm().sqrt();
+
+            Circle {
+                point: c,
+                radius: r,
+            }
+        };
+
+        let in_circle =
+            |a: Point2d, c: Circle| -> bool { (a - c.point).norm() <= c.radius * c.radius + EPS };
+
+        let mut c = make_circle_2(points[0], points[1]);
+
+        for i in 2..n {
+            if in_circle(points[i], c) {
+                continue;
+            }
+            c = make_circle_2(points[0], points[i]);
+
+            for j in 1..i {
+                if in_circle(points[j], c) {
+                    continue;
+                }
+                c = make_circle_2(points[i], points[j]);
+
+                for k in 0..j {
+                    if in_circle(points[k], c) {
+                        continue;
+                    }
+                    c = make_circle_3(points[i], points[j], points[k]);
+                }
+            }
+        }
+        c
+    }
     /// Returns a convex hull.
     /// Supposed that all points are unique and the number of points is greater than 2
     pub fn convex_hull(points: &Polygon) -> Polygon {
@@ -253,6 +333,43 @@ pub mod geometry2d {
             Ccw::OnlineFront
         } else {
             Ccw::OnSegment
+        }
+    }
+    #[allow(clippy::module_inception, clippy::many_single_char_names)]
+    /// The period is 2^128 - 1
+    pub mod xorshift {
+        #[derive(Debug, Clone)]
+        #[allow(dead_code)]
+        pub struct Xorshift128 {
+            x: u32,
+            y: u32,
+            z: u32,
+            w: u32,
+        }
+        impl Default for Xorshift128 {
+            fn default() -> Self {
+                Xorshift128 {
+                    x: 123456789,
+                    y: 362436069,
+                    z: 521288629,
+                    w: 88675123,
+                }
+            }
+        }
+        impl Xorshift128 {
+            pub fn new(seed: u32) -> Xorshift128 {
+                let mut xorshift = Xorshift128::default();
+                xorshift.z ^= seed;
+                xorshift
+            }
+            pub fn gen(&mut self) -> u32 {
+                let t = self.x ^ (self.x << 11);
+                self.x = self.y;
+                self.y = self.z;
+                self.z = self.w;
+                self.w = (self.w ^ (self.w >> 19)) ^ (t ^ (t >> 8));
+                self.w
+            }
         }
     }
 }
