@@ -25,13 +25,13 @@ pub mod macros {
     /// Display a line of variables
     macro_rules! echo {
         () => {
-            {
+            if cfg!(debug_assertions) {
                 use std::io::{self, Write};
                 writeln!(io::stderr(), "{}:", line!()).unwrap();
             }
         };
         ($e: expr, $($es: expr),+ $(,)?) => {
-            {
+            if cfg!(debug_assertions) {
                 use std::io::{self, Write};
 
                 write!(io::stderr(), "{}:", line!()).unwrap();
@@ -44,7 +44,7 @@ pub mod macros {
         };
 
         ($e: expr) => {
-            {
+            if cfg!(debug_assertions) {
                 use std::io::{self, Write};
                 let result = $e;
                 writeln!(io::stderr(), "{}: {} = {:?}",
@@ -60,13 +60,13 @@ pub mod macros {
     /// Display a line of variables with colors
     macro_rules! cecho {
         () => {
-            {
+            if cfg!(debug_assertions) {
                 use std::io::{self, Write};
                 writeln!(io::stderr(), "\x1b[31;1m{}\x1b[m:", line!()).unwrap();
             }
         };
         ($e: expr, $($es: expr),+ $(,)?) => {
-            {
+            if cfg!(debug_assertions) {
                 use std::io::{self, Write};
 
                 write!(io::stderr(), "\x1b[31;1m{}\x1b[m:", line!()).unwrap();
@@ -79,7 +79,7 @@ pub mod macros {
         };
 
         ($e: expr) => {
-            {
+            if cfg!(debug_assertions) {
                 use std::io::{self, Write};
                 let result = $e;
                 writeln!(io::stderr(), "\x1b[31;1m{}\x1b[m: \x1b[92;1m{}\x1b[m = {:?}",
