@@ -50,7 +50,6 @@ pub mod macros {
                 writeln!(io::stderr(), "{}: {} = {:?}",
                         line!(), stringify!($e), result)
                     .unwrap();
-                result
             }
         };
     }
@@ -85,7 +84,6 @@ pub mod macros {
                 writeln!(io::stderr(), "\x1b[31;1m{}\x1b[m: \x1b[92;1m{}\x1b[m = {:?}",
                         line!(), stringify!($e), result)
                     .unwrap();
-                result
             }
         };
     }
