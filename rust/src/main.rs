@@ -2,8 +2,6 @@ use cargo_snippet::snippet;
 use rust::fastio::fastio;
 #[snippet(name = "solver", include = "fastio")]
 #[derive(Default)]
-/// NOTE
-/// declare variables to reduce the number of parameters for dp and dfs etc.
 pub struct Solver {}
 #[snippet(name = "solver")]
 impl Solver {
