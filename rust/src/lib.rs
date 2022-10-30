@@ -3,6 +3,7 @@ pub mod binary_trie;
 pub mod binomial_coefficient_mod_prime;
 pub mod bitset;
 pub mod btree_multiset;
+pub mod change_min_max;
 pub mod dinic;
 pub mod fastio;
 pub mod fenwick_tree;
