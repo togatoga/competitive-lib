@@ -98,6 +98,7 @@ pub mod range_set {
 
 #[cfg(test)]
 mod tests {
+
     use super::range_set::RangeSet;
     #[test]
     fn test_insert() {
@@ -116,5 +117,41 @@ mod tests {
         assert!(set.size() == 1);
     }
     #[test]
-    fn test_random_insert() {}
+    fn test_random_insert() {
+        use rand::{thread_rng, Rng};
+        let n: usize = 10000;
+        let mut covered = vec![false; n + 1];
+        let mut set = RangeSet::default();
+        for _ in 0..100 {
+            let left = thread_rng().gen_range(0, n);
+            let right = thread_rng().gen_range(left, n);
+            let mut increased = 0;
+            for i in left..=right {
+                if !covered[i] {
+                    increased += 1;
+                }
+                covered[i] = true;
+            }
+            assert_eq!(set.insert_range(left as i64, right as i64), increased);
+
+            for (left, right) in set
+                .iter()
+                .map(|&(left, right)| (left as usize, right as usize))
+            {
+                assert!(covered.iter().skip(left).take(right - left + 1).all(|&x| x));
+            }
+            for i in 0..n {
+                assert_eq!(set.covered(i as i64), covered[i]);
+                if covered[i] {
+                    let (left, right) = set.covered_by(i as i64).expect("no range");
+                    if left >= 1 {
+                        assert!(!covered[(left - 1) as usize]);
+                    }
+                    if right as usize + 1 < n {
+                        assert!(!covered[(right + 1) as usize]);
+                    }
+                }
+            }
+        }
+    }
 }
