@@ -1,3 +1,5 @@
+use cargo_snippet::snippet;
+#[snippet]
 #[allow(clippy::module_inception)]
 pub mod range_set {
     use std::collections::BTreeSet;
@@ -21,8 +23,9 @@ pub mod range_set {
         pub fn covered(&self, x: i64) -> bool {
             self.range_covered(x, x)
         }
-        /// Returns a range if it covers [l, r], otherwise returns `None`
-        pub fn covered_by(&self, l: i64, r: i64) -> Option<(i64, i64)> {
+
+        /// Returns a range if it covers [l, r], otherwise returns `None`.
+        pub fn range_covered_by(&self, l: i64, r: i64) -> Option<(i64, i64)> {
             assert!(l <= r);
             if let Some(&(left, right)) = self.set.range(..(l + 1, l + 1)).next_back() {
                 (left <= l && r <= right).then_some((left, right))
@@ -30,6 +33,11 @@ pub mod range_set {
                 None
             }
         }
+        /// Returns a range if it covers a point, otherwise returns `None`.
+        pub fn covered_by(&self, x: i64) -> Option<(i64, i64)> {
+            self.range_covered_by(x, x)
+        }
+
         /// Insert a range [l, r] to `set` and returns an increased amount.
         pub fn insert_range(&mut self, l: i64, mut r: i64) -> i64 {
             assert!(l <= r);
@@ -78,8 +86,35 @@ pub mod range_set {
             self.insert_range(x, x)
         }
         /// Returns the number of range.
-        pub fn range_size(&self) -> usize {
+        pub fn size(&self) -> usize {
             self.set.len()
         }
+        /// Returns an iter
+        pub fn iter(&self) -> std::collections::btree_set::Iter<(i64, i64)> {
+            self.set.iter()
+        }
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::range_set::RangeSet;
+    #[test]
+    fn test_insert() {
+        let mut set = RangeSet::default();
+        let increased = set.insert_range(0, 5);
+        assert!(increased == 6);
+        let increased = set.insert_range(6, 7);
+        assert!(increased == 2);
+        let increased = set.insert(9);
+        assert!(increased == 1);
+        // [0, 7] [9, 9]
+        assert!(set.size() == 2);
+
+        // [0, 10]
+        set.insert_range(8, 10);
+        assert!(set.size() == 1);
+    }
+    #[test]
+    fn test_random_insert() {}
 }
