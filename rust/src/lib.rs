@@ -25,6 +25,7 @@ pub mod mod_int;
 pub mod nonnan;
 pub mod primal_dual;
 pub mod range_prime_sieve;
+pub mod range_set;
 pub mod rolling_hash;
 pub mod rustc_hash;
 pub mod scc;
