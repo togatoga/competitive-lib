@@ -42,7 +42,7 @@ pub mod range_set {
             self.range_covered_by(x, x)
         }
 
-        /// Insert a range [l, r] to `set` and returns an increased amount.
+        /// Inserts a range [l, r] into `set` and returns an inserted amount.
         pub fn insert_range(&mut self, l: i64, mut r: i64) -> i64 {
             assert!(l <= r);
             // erase
@@ -85,9 +85,56 @@ pub mod range_set {
             inserted - erased
         }
 
-        /// Insert a point into `set`.
+        /// Inserts a point into `set`.
         pub fn insert(&mut self, x: i64) -> i64 {
             self.insert_range(x, x)
+        }
+
+        /// Erases a range [l, r] and returns an erased amount.
+        pub fn erase_range(&mut self, l: i64, r: i64) -> i64 {
+            assert!(l <= r);
+
+            // fully covered
+            if let Some((left, right)) = self.range_covered_by(l, r) {
+                self.set.remove(&(left, right));
+                if left < l {
+                    self.set.insert((left, l - 1));
+                }
+                if r < right {
+                    self.set.insert((r + 1, right));
+                }
+                return r - l + 1;
+            }
+            // erase right ranges
+            let mut erased = 0;
+            let mut inserted = 0;
+            while let Some(&(left, right)) = self.set.range((l + 1, l + 1)..).next() {
+                erased += right - left + 1;
+                self.set.remove(&(left, right));
+                if r < right {
+                    self.set.insert((r + 1, right));
+                    inserted += right - r;
+                    break;
+                }
+            }
+
+            // erase a left range
+            if let Some(&(left, right)) = self.set.range(..(l + 1, l + 1)).next_back() {
+                if l <= right {
+                    self.set.remove(&(left, right));
+                    erased += right - left + 1;
+                    if left != l {
+                        self.set.insert((left, l - 1));
+                        inserted += l - left;
+                    }
+                }
+            }
+            erased - inserted
+        }
+
+        /// Erase a point and returns an erased amount.
+        pub fn erase(&mut self, x: i64) -> i64 {
+            self.erase_range(x, x)
         }
 
         /// Returns a mex that is greater than `x`.
@@ -119,7 +166,7 @@ mod tests {
 
     use super::range_set::RangeSet;
     #[test]
-    fn test_insert() {
+    fn test_insert_erase() {
         let mut set = RangeSet::default();
         // [0,5]
         let increased = set.insert_range(0, 5);
@@ -141,6 +188,25 @@ mod tests {
         assert!(set.size() == 1);
         assert_eq!(set.mex(0), 11);
         assert_eq!(set.mex(-100), -100);
+
+        // erase
+        // [0, 1] [6, 10]
+        let erased = set.erase_range(2, 5);
+        assert_eq!(erased, 4);
+        assert_eq!(set.size(), 2);
+        // [1, 1] [6, 10];
+        let erased = set.erase(0);
+        assert_eq!(erased, 1);
+        assert_eq!(set.size(), 2);
+        // [1, 1]
+        let erased = set.erase_range(2, 10);
+        assert_eq!(erased, 5);
+        assert_eq!(set.size(), 1);
+
+        // []
+        let erased = set.erase_range(1, 10);
+        assert_eq!(erased, 1);
+        assert_eq!(set.size(), 0);
     }
     #[test]
     fn test_random_insert() {
