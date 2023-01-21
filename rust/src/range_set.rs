@@ -137,7 +137,6 @@ mod tests {
         assert!(set.size() == 1);
         assert_eq!(set.mex(0), 11);
         assert_eq!(set.mex(-100), -100);
-        
     }
     #[test]
     fn test_random_insert() {

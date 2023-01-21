@@ -48,7 +48,7 @@ pub mod binomial_coefficient_mod_prime {
             let mut fact_mods = vec![1i64; prime_mod as usize];
             for x in 1..prime_mod {
                 let i = x as usize;
-                fact_mods[i] *= x * fact_mods[i - 1] as i64 % prime_mod;
+                fact_mods[i] *= x * fact_mods[i - 1] % prime_mod;
             }
             BinomialCoefficient {
                 fact_mods,

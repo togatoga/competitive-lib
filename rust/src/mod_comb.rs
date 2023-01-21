@@ -54,7 +54,7 @@ pub mod mod_comb {
         }
         /// log(mod)
         pub fn inv(&self, x: i64) -> i64 {
-            ModComb::mod_pow(x as i64, (self.module - 2) as usize, self.module)
+            ModComb::mod_pow(x, (self.module - 2) as usize, self.module)
         }
         pub fn inv_fact(&self, x: usize) -> i64 {
             self.inv_fact[x]

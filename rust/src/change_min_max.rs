@@ -13,7 +13,7 @@ pub mod change_min_max {
 
     impl<T: PartialOrd> ChangeMinMax<T> for T {
         fn chmin(&mut self, value: T) -> bool {
-            if value.lt(&self) {
+            if value.lt(self) {
                 *self = value;
                 true
             } else {
@@ -21,7 +21,7 @@ pub mod change_min_max {
             }
         }
         fn chmax(&mut self, value: T) -> bool {
-            if value.gt(&self) {
+            if value.gt(self) {
                 *self = value;
                 true
             } else {
