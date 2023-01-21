@@ -16,7 +16,7 @@ impl Solver {
 #[snippet(include = "solver")]
 fn main() {
     std::thread::Builder::new()
-        .stack_size(64 * 1024 * 1024) // 64MB
+        .stack_size(256 * 1024 * 1024) // 256MB
         .spawn(|| Solver::default().solve())
         .unwrap()
         .join()
