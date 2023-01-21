@@ -240,9 +240,9 @@ mod test {
     }
     #[test]
     fn test_new() {
-        let x = ModInt::new((1e9 as i64 + 7) as i64);
+        let x = ModInt::new(1e9 as i64 + 7);
         assert_eq!(x.val, 0);
-        let x = ModInt::new((1e9 as i64 + 8) as i64);
+        let x = ModInt::new(1e9 as i64 + 8);
         assert_eq!(x.val, 1);
         let x = ModInt::new(-1);
         assert_eq!(x.val, 1_000_000_006);

@@ -152,12 +152,14 @@ mod tests {
             let left = thread_rng().gen_range(0, n);
             let right = thread_rng().gen_range(left, n);
             let mut increased = 0;
-            for i in left..=right {
-                if !covered[i] {
+            // fill
+            covered.iter_mut().take(right + 1).skip(left).for_each(|c| {
+                if !*c {
                     increased += 1;
                 }
-                covered[i] = true;
-            }
+                *c = true;
+            });
+
             assert_eq!(set.insert_range(left as i64, right as i64), increased);
 
             for (left, right) in set

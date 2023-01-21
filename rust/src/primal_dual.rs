@@ -29,6 +29,9 @@ pub mod primal_dual {
                 is_reversed,
             }
         }
+        pub fn is_reversed(&self) -> bool {
+            self.is_reversed
+        }
     }
     #[derive(Clone)]
     pub struct PrimalDual {
