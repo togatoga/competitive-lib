@@ -3,16 +3,35 @@ use cargo_snippet::snippet;
 #[allow(clippy::module_inception)]
 /// verified@https://codeforces.com/contest/915/submission/189948413
 pub mod range_set {
-    use std::collections::BTreeSet;
+    use std::{
+        collections::BTreeSet,
+        ops::{Range, RangeInclusive},
+    };
 
     #[derive(Debug, Clone, Default)]
     pub struct RangeSet {
         set: BTreeSet<(i64, i64)>,
     }
 
+    pub trait ClosedInterval {
+        fn interval(&self) -> (i64, i64);
+    }
+
+    impl ClosedInterval for Range<i64> {
+        fn interval(&self) -> (i64, i64) {
+            (self.start, self.end - 1)
+        }
+    }
+    impl ClosedInterval for RangeInclusive<i64> {
+        fn interval(&self) -> (i64, i64) {
+            (*self.start(), *self.end())
+        }
+    }
+
     impl RangeSet {
-        /// Returns a boolean whether the range [l, r] is covered by `set`.
-        pub fn range_covered(&self, l: i64, r: i64) -> bool {
+        /// Returns a boolean whether a given range is fully covered by `set`.
+        pub fn covered<T: ClosedInterval>(&self, range: T) -> bool {
+            let (l, r) = range.interval();
             assert!(l <= r);
             if let Some(&(left, right)) = self.set.range(..(l + 1, l + 1)).next_back() {
                 left <= l && r <= right
@@ -20,13 +39,10 @@ pub mod range_set {
                 false
             }
         }
-        /// Returns a boolean whether a point is covered by `set`.
-        pub fn covered(&self, x: i64) -> bool {
-            self.range_covered(x, x)
-        }
 
-        /// Returns a range if it covers [l, r], otherwise returns `None`.
-        pub fn range_covered_by(&self, l: i64, r: i64) -> Option<(i64, i64)> {
+        /// Returns a range if it covers, otherwise returns `None`.
+        pub fn covered_by<T: ClosedInterval>(&self, range: T) -> Option<(i64, i64)> {
+            let (l, r) = range.interval();
             assert!(l <= r);
             if let Some(&(left, right)) = self.set.range(..(l + 1, l + 1)).next_back() {
                 if left <= l && r <= right {
@@ -38,13 +54,10 @@ pub mod range_set {
                 None
             }
         }
-        /// Returns a range if it covers a point, otherwise returns `None`.
-        pub fn covered_by(&self, x: i64) -> Option<(i64, i64)> {
-            self.range_covered_by(x, x)
-        }
 
-        /// Inserts a range [l, r] into `set` and returns an inserted amount.
-        pub fn insert_range(&mut self, l: i64, mut r: i64) -> i64 {
+        /// Inserts a range into `set` and returns an inserted amount.
+        pub fn insert<T: ClosedInterval>(&mut self, range: T) -> i64 {
+            let (l, mut r) = range.interval();
             assert!(l <= r);
             // erase
             let mut erased = 0;
@@ -86,17 +99,13 @@ pub mod range_set {
             inserted - erased
         }
 
-        /// Inserts a point into `set`.
-        pub fn insert(&mut self, x: i64) -> i64 {
-            self.insert_range(x, x)
-        }
-
-        /// Erases a range [l, r] and returns an erased amount.
-        pub fn erase_range(&mut self, l: i64, r: i64) -> i64 {
+        /// Erases a range and returns an erased amount.
+        pub fn erase<T: ClosedInterval>(&mut self, range: T) -> i64 {
+            let (l, r) = range.interval();
             assert!(l <= r);
 
             // fully covered
-            if let Some((left, right)) = self.range_covered_by(l, r) {
+            if let Some((left, right)) = self.covered_by(range) {
                 self.set.remove(&(left, right));
                 if left < l {
                     self.set.insert((left, l - 1));
@@ -137,11 +146,6 @@ pub mod range_set {
             erased - inserted
         }
 
-        /// Erase a point and returns an erased amount.
-        pub fn erase(&mut self, x: i64) -> i64 {
-            self.erase_range(x, x)
-        }
-
         /// Returns a mex that is greater than `x`.
         pub fn mex(&self, x: i64) -> i64 {
             if let Some(&(left, right)) = self.set.range(..(x + 1, x + 1)).next_back() {
@@ -174,53 +178,59 @@ mod tests {
     fn test_insert_erase() {
         let mut set = RangeSet::default();
         // [0,5]
-        let increased = set.insert_range(0, 5);
+        let increased = set.insert(0..=5);
         assert!(increased == 6);
         assert_eq!(set.mex(0), 6);
         // [0, 7]
-        let increased = set.insert_range(6, 7);
+        let increased = set.insert(6..=7);
         assert!(increased == 2);
         assert_eq!(set.mex(0), 8);
 
         // [0, 7] [9, 9]
-        let increased = set.insert(9);
+        let increased = set.insert(9..=9);
         assert!(increased == 1);
         assert!(set.size() == 2);
         assert_eq!(set.mex(0), 8);
 
         // [0, 10]
-        set.insert_range(8, 10);
+        set.insert(8..=10);
         assert!(set.size() == 1);
         assert_eq!(set.mex(0), 11);
         assert_eq!(set.mex(-100), -100);
 
         // erase
         // [0, 1] [6, 10]
-        let erased = set.erase_range(2, 5);
+        let erased = set.erase(2..=5);
         assert_eq!(erased, 4);
         assert_eq!(set.size(), 2);
         // [1, 1] [6, 10];
-        let erased = set.erase(0);
+        let erased = set.erase(0..=0);
         assert_eq!(erased, 1);
         assert_eq!(set.size(), 2);
         // [1, 1]
-        let erased = set.erase_range(2, 10);
+        let erased = set.erase(2..=10);
         assert_eq!(erased, 5);
         assert_eq!(set.size(), 1);
 
         // []
-        let erased = set.erase_range(1, 1);
+        let erased = set.erase(1..=1);
         assert_eq!(erased, 1);
         assert_eq!(set.size(), 0);
 
         // [8, 8]
-        assert_eq!(set.insert(8), 1);
+        assert_eq!(set.insert(8..=8), 1);
         // [1, 2] [8, 8]
-        assert_eq!(set.insert_range(1, 2), 2);
+        assert_eq!(set.insert(1..=2), 2);
         // [8, 8]
-        assert_eq!(set.erase_range(1, 7), 2);
+        assert_eq!(set.erase(1..=7), 2);
         // [8, 8]
-        assert_eq!(set.erase_range(0, 5), 0);
+        assert_eq!(set.erase(0..=5), 0);
+
+        // [8, 12]
+        assert_eq!(set.insert(9..13), 4);
+        assert_eq!(set.size(), 1);
+        // [8, 9] [12]
+        assert_eq!(set.erase(10..12), 2);
     }
 
     #[test]
@@ -246,7 +256,7 @@ mod tests {
                     *c = true;
                 });
 
-                assert_eq!(set.insert_range(left as i64, right as i64), increased);
+                assert_eq!(set.insert(left as i64..=right as i64), increased);
             } else {
                 // insert
                 let mut erased = 0;
@@ -256,7 +266,7 @@ mod tests {
                     }
                     *c = false;
                 });
-                assert_eq!(set.erase_range(left as i64, right as i64), erased);
+                assert_eq!(set.erase(left as i64..=right as i64), erased);
             }
 
             // checked coverd ranges
@@ -269,9 +279,9 @@ mod tests {
 
             let mut checked_mex = false;
             for i in 0..n {
-                assert_eq!(set.covered(i as i64), covered[i]);
+                assert_eq!(set.covered(i as i64..=i as i64), covered[i]);
                 if covered[i] {
-                    let (left, right) = set.covered_by(i as i64).expect("no range");
+                    let (left, right) = set.covered_by(i as i64..=i as i64).expect("no range");
                     if left >= 1 {
                         assert!(!covered[(left - 1) as usize]);
                     }
