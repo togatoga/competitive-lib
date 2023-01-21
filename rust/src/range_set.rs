@@ -109,6 +109,10 @@ pub mod range_set {
             let mut erased = 0;
             let mut inserted = 0;
             while let Some(&(left, right)) = self.set.range((l + 1, l + 1)..).next() {
+                // not intersected
+                if r < left {
+                    break;
+                }
                 erased += right - left + 1;
                 self.set.remove(&(left, right));
                 if r < right {
@@ -204,30 +208,57 @@ mod tests {
         assert_eq!(set.size(), 1);
 
         // []
-        let erased = set.erase_range(1, 10);
+        let erased = set.erase_range(1, 1);
         assert_eq!(erased, 1);
         assert_eq!(set.size(), 0);
+
+        // [8, 8]
+        assert_eq!(set.insert(8), 1);
+        // [1, 2] [8, 8]
+        assert_eq!(set.insert_range(1, 2), 2);
+        // [8, 8]
+        assert_eq!(set.erase_range(1, 7), 2);
+        // [8, 8]
+        assert_eq!(set.erase_range(0, 5), 0);
     }
+
     #[test]
-    fn test_random_insert() {
+    fn test_random_insert_erase() {
         use rand::{thread_rng, Rng};
-        let n: usize = 10000;
+        let n: usize = 5000;
+
         let mut covered = vec![false; n + 1];
         let mut set = RangeSet::default();
-        for _ in 0..100 {
+        for _ in 0..=n / 10 {
             let left = thread_rng().gen_range(0, n);
             let right = thread_rng().gen_range(left, n);
-            let mut increased = 0;
-            // fill
-            covered.iter_mut().take(right + 1).skip(left).for_each(|c| {
-                if !*c {
-                    increased += 1;
-                }
-                *c = true;
-            });
 
-            assert_eq!(set.insert_range(left as i64, right as i64), increased);
+            let value = thread_rng().gen_range(0, 2);
+            // println!("{} {} {}", left, right, value);
+            if value % 2 == 0 {
+                // insert
+                let mut increased = 0;
+                covered.iter_mut().take(right + 1).skip(left).for_each(|c| {
+                    if !*c {
+                        increased += 1;
+                    }
+                    *c = true;
+                });
 
+                assert_eq!(set.insert_range(left as i64, right as i64), increased);
+            } else {
+                // insert
+                let mut erased = 0;
+                covered.iter_mut().take(right + 1).skip(left).for_each(|c| {
+                    if *c {
+                        erased += 1;
+                    }
+                    *c = false;
+                });
+                assert_eq!(set.erase_range(left as i64, right as i64), erased);
+            }
+
+            // checked coverd ranges
             for (left, right) in set
                 .iter()
                 .map(|&(left, right)| (left as usize, right as usize))
