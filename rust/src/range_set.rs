@@ -27,6 +27,11 @@ pub mod range_set {
             (*self.start(), *self.end())
         }
     }
+    impl ClosedInterval for i64 {
+        fn interval(&self) -> (i64, i64) {
+            (*self, *self)
+        }
+    }
 
     impl RangeSet {
         /// Returns a boolean whether a given range is fully covered by `set`.
@@ -167,6 +172,11 @@ pub mod range_set {
         pub fn iter(&self) -> std::collections::btree_set::Iter<(i64, i64)> {
             self.set.iter()
         }
+
+        /// Clears `set`
+        pub fn clear(&mut self) {
+            self.set.clear();
+        }
     }
 }
 
@@ -187,7 +197,7 @@ mod tests {
         assert_eq!(set.mex(0), 8);
 
         // [0, 7] [9, 9]
-        let increased = set.insert(9..=9);
+        let increased = set.insert(9);
         assert!(increased == 1);
         assert!(set.size() == 2);
         assert_eq!(set.mex(0), 8);
@@ -204,7 +214,7 @@ mod tests {
         assert_eq!(erased, 4);
         assert_eq!(set.size(), 2);
         // [1, 1] [6, 10];
-        let erased = set.erase(0..=0);
+        let erased = set.erase(0);
         assert_eq!(erased, 1);
         assert_eq!(set.size(), 2);
         // [1, 1]
@@ -213,12 +223,12 @@ mod tests {
         assert_eq!(set.size(), 1);
 
         // []
-        let erased = set.erase(1..=1);
+        let erased = set.erase(1);
         assert_eq!(erased, 1);
         assert_eq!(set.size(), 0);
 
         // [8, 8]
-        assert_eq!(set.insert(8..=8), 1);
+        assert_eq!(set.insert(8), 1);
         // [1, 2] [8, 8]
         assert_eq!(set.insert(1..=2), 2);
         // [8, 8]
