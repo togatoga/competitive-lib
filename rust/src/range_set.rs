@@ -1,6 +1,7 @@
 use cargo_snippet::snippet;
 #[snippet]
 #[allow(clippy::module_inception)]
+/// verified@https://codeforces.com/contest/915/submission/189948413
 pub mod range_set {
     use std::collections::BTreeSet;
 
