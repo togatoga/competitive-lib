@@ -28,7 +28,11 @@ pub mod range_set {
         pub fn range_covered_by(&self, l: i64, r: i64) -> Option<(i64, i64)> {
             assert!(l <= r);
             if let Some(&(left, right)) = self.set.range(..(l + 1, l + 1)).next_back() {
-                (left <= l && r <= right).then_some((left, right))
+                if left <= l && r <= right {
+                    Some((left, right))
+                } else {
+                    None
+                }
             } else {
                 None
             }
