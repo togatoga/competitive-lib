@@ -85,6 +85,20 @@ pub mod range_set {
         pub fn insert(&mut self, x: i64) -> i64 {
             self.insert_range(x, x)
         }
+
+        /// Returns a mex that is greater than `x`.
+        pub fn mex(&self, x: i64) -> i64 {
+            if let Some(&(left, right)) = self.set.range(..(x + 1, x + 1)).next_back() {
+                if left <= x && x <= right {
+                    right + 1
+                } else {
+                    x
+                }
+            } else {
+                x
+            }
+        }
+
         /// Returns the number of range.
         pub fn size(&self) -> usize {
             self.set.len()
@@ -103,18 +117,27 @@ mod tests {
     #[test]
     fn test_insert() {
         let mut set = RangeSet::default();
+        // [0,5]
         let increased = set.insert_range(0, 5);
         assert!(increased == 6);
+        assert_eq!(set.mex(0), 6);
+        // [0, 7]
         let increased = set.insert_range(6, 7);
         assert!(increased == 2);
+        assert_eq!(set.mex(0), 8);
+
+        // [0, 7] [9, 9]
         let increased = set.insert(9);
         assert!(increased == 1);
-        // [0, 7] [9, 9]
         assert!(set.size() == 2);
+        assert_eq!(set.mex(0), 8);
 
         // [0, 10]
         set.insert_range(8, 10);
         assert!(set.size() == 1);
+        assert_eq!(set.mex(0), 11);
+        assert_eq!(set.mex(-100), -100);
+        
     }
     #[test]
     fn test_random_insert() {
@@ -140,6 +163,8 @@ mod tests {
             {
                 assert!(covered.iter().skip(left).take(right - left + 1).all(|&x| x));
             }
+
+            let mut checked_mex = false;
             for i in 0..n {
                 assert_eq!(set.covered(i as i64), covered[i]);
                 if covered[i] {
@@ -150,6 +175,11 @@ mod tests {
                     if right as usize + 1 < n {
                         assert!(!covered[(right + 1) as usize]);
                     }
+                } else {
+                    if !checked_mex {
+                        assert_eq!(set.mex(0), i as i64);
+                    }
+                    checked_mex = true;
                 }
             }
         }
