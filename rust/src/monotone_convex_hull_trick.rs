@@ -1,7 +1,6 @@
 use cargo_snippet::snippet;
 #[snippet]
 #[allow(clippy::module_inception)]
-#[allow(clippy::module_inception)]
 pub mod monotone_convex_hull_trick {
     use std::collections::VecDeque;
     #[derive(Debug, Default, Clone)]
@@ -89,7 +88,7 @@ pub mod monotone_convex_hull_trick {
         /// Returns a minimum value of `a*x + b` for given line segments.
         pub fn query(&self, x: i64) -> i64 {
             assert!(!self.lines.is_empty());
-            let mut left = -1 as isize;
+            let mut left = -1_isize;
             let mut right = (self.lines.len() - 1) as isize;
             while right - left > 1 {
                 let med = ((left + right) >> 1) as usize;
