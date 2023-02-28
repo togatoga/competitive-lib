@@ -6,7 +6,7 @@ pub mod centroid_decomposition {
     #[derive(Debug, Clone, Default)]
     pub struct CentroidDecomposition {
         graph: Vec<Vec<usize>>,
-        /// (centroid, depth from a root centrod)
+        /// (centroid, length from centroid)
         /// A node has a maximum logn centroids.
         belong: Vec<Vec<(usize, usize)>>,
     }
@@ -67,6 +67,10 @@ pub mod centroid_decomposition {
                     depth + 1,
                 );
             }
+        }
+        /// Returns an array of tuple (usize, usize) that means (centroid, length from centroid) what `x` belongs.
+        pub fn belong(&self, x: usize) -> &[(usize, usize)] {
+            &self.belong[x]
         }
 
         fn subtree_size(
