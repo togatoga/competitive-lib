@@ -6,6 +6,9 @@ pub mod centroid_decomposition {
     #[derive(Debug, Clone, Default)]
     pub struct CentroidDecomposition {
         graph: Vec<Vec<usize>>,
+        /// (centroid, depth from a root centrod)
+        /// A node has a maximum logn centroids.
+        belong: Vec<Vec<(usize, usize)>>,
     }
 
     impl CentroidDecomposition {
@@ -13,6 +16,7 @@ pub mod centroid_decomposition {
         pub fn new(n: usize) -> Self {
             CentroidDecomposition {
                 graph: vec![vec![]; n],
+                belong: Vec::new(),
             }
         }
 
@@ -32,8 +36,37 @@ pub mod centroid_decomposition {
             let mut childs = vec![vec![]; n];
             let mut dp = vec![0; n];
             let mut is_centroid = vec![false; n];
-            let centroid = self.inner_build(0, None, &mut childs, &mut dp, &mut is_centroid);
+            let mut belong = vec![vec![]; n];
+            let centroid =
+                self.inner_build(0, None, &mut childs, &mut dp, &mut is_centroid, &mut belong);
+            self.belong = belong;
             (centroid, childs)
+        }
+
+        fn belong_dfs(
+            pos: usize,
+            pre: Option<usize>,
+            centroid: usize,
+            graph: &[Vec<usize>],
+            is_centroid: &[bool],
+            belong: &mut [Vec<(usize, usize)>],
+            depth: usize,
+        ) {
+            belong[pos].push((centroid, depth));
+            for &nxt in graph[pos].iter() {
+                if Some(nxt) == pre || is_centroid[nxt] {
+                    continue;
+                }
+                CentroidDecomposition::belong_dfs(
+                    nxt,
+                    Some(pos),
+                    centroid,
+                    graph,
+                    is_centroid,
+                    belong,
+                    depth + 1,
+                );
+            }
         }
 
         fn subtree_size(
@@ -60,6 +93,7 @@ pub mod centroid_decomposition {
             childs: &mut [Vec<usize>],
             dp: &mut [usize],
             is_centroid: &mut [bool],
+            belong: &mut [Vec<(usize, usize)>],
         ) -> usize {
             self.subtree_size(root, pre, dp, is_centroid);
             let centroid = {
@@ -89,9 +123,18 @@ pub mod centroid_decomposition {
                 childs[pre].push(centroid);
             }
             is_centroid[centroid] = true;
+            CentroidDecomposition::belong_dfs(
+                centroid,
+                None,
+                centroid,
+                &self.graph,
+                is_centroid,
+                belong,
+                0,
+            );
             for &nxt in self.graph[centroid].iter() {
                 if !is_centroid[nxt] {
-                    self.inner_build(nxt, Some(centroid), childs, dp, is_centroid);
+                    self.inner_build(nxt, Some(centroid), childs, dp, is_centroid, belong);
                 }
             }
             centroid
