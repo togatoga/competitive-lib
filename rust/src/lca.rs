@@ -52,6 +52,20 @@ pub mod lca {
             self.distance(u, p) + self.distance(p, v) == self.distance(u, v)
         }
 
+        /// Returns an d-ancestor of `u` if it exists.
+        pub fn ancestor(&self, mut u: usize, d: usize) -> Option<usize> {
+            let k = self.parents.len();
+            for i in (0..k).rev() {
+                if d >> i & 1 == 1 {
+                    if let Some(parent) = self.parents[i][u] {
+                        u = parent;
+                    } else {
+                        return None;
+                    }
+                }
+            }
+            return Some(u);
+        }
         /// Get the lowest common ancestor of `u` and `v` LCA(u, v)
         /// log(n)
         pub fn query(&self, u: usize, v: usize) -> usize {
