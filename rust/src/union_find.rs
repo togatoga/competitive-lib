@@ -12,28 +12,35 @@ pub mod union_find {
             let parent = vec![-1; size];
             UnionFind { parent, size }
         }
-        pub fn unite(&mut self, x: usize, y: usize) {
+
+        /// Returns a (usize, usize) tuple that represents `0` is a new root and `1` is a merged root.
+        /// Returns a `None` if `x` and `y` is already merged.        
+        pub fn unite(&mut self, x: usize, y: usize) -> Option<(usize, usize)> {
             let x_root = self.root(x);
             let y_root = self.root(y);
-            //different set
-            if x_root != y_root {
-                //size1 and size are negative
-                //-1 -2
-                let size1 = self.parent[x_root];
-                let size2 = self.parent[y_root];
-                //merge smaller one for bigger one
-                //e.g -2 <= -1
-                if size1 <= size2 {
-                    self.parent[x_root] += size2;
-                    //new parent
-                    self.parent[y_root] = x_root as i32;
-                } else {
-                    self.parent[y_root] += size1;
-                    //new parent
-                    self.parent[x_root] = y_root as i32;
-                }
-                self.size -= 1;
+            if x_root == y_root {
+                return None;
             }
+            //different set
+            //size1 and size are negative
+            //-1 -2
+            let size1 = self.parent[x_root];
+            let size2 = self.parent[y_root];
+            //merge smaller one for bigger one
+            //e.g -2 <= -1
+            let (new_root, merged_root) = if size1 <= size2 {
+                self.parent[x_root] += size2;
+                //new parent
+                self.parent[y_root] = x_root as i32;
+                (x_root, y_root)
+            } else {
+                self.parent[y_root] += size1;
+                //new parent
+                self.parent[x_root] = y_root as i32;
+                (y_root, x_root)
+            };
+            self.size -= 1;
+            Some((new_root, merged_root))
         }
         pub fn is_root(&mut self, x: usize) -> bool {
             self.root(x) == x

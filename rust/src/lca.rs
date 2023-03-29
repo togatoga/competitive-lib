@@ -64,7 +64,7 @@ pub mod lca {
                     }
                 }
             }
-            return Some(u);
+            Some(u)
         }
         /// Get the lowest common ancestor of `u` and `v` LCA(u, v)
         /// log(n)
