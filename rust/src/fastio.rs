@@ -5,6 +5,7 @@ pub mod fastio {
     use std::collections::VecDeque;
     use std::io::BufWriter;
     use std::io::Write;
+    use std::ops::Sub;
 
     pub struct Writer<W: std::io::Write> {
         writer: std::io::BufWriter<W>,
@@ -49,6 +50,9 @@ pub mod fastio {
                 }
             }
             self.buffer.pop_front().unwrap().parse::<T>().ok().unwrap()
+        }
+        pub fn read1<T: std::str::FromStr + Sub<Output = T> + From<i8>>(&mut self) -> T {
+            self.read::<T>() - T::from(1)
         }
         pub fn read_line(&mut self) -> String {
             let mut line = String::new();
