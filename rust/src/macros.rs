@@ -2,7 +2,6 @@ use cargo_snippet::snippet;
 #[allow(clippy::module_inception)]
 #[snippet]
 pub mod macros {
-
     #[macro_export]
     #[allow(unused_macros)]
     macro_rules! max {
@@ -20,70 +19,79 @@ pub mod macros {
             std::cmp::min($x, min!($($y),+))
         }
     }
+
     #[macro_export]
     #[allow(unused_macros)]
-    /// Display a line of variables
-    macro_rules! echo {
+    macro_rules! ep {
         () => {
-            if cfg!(debug_assertions) {
-                use std::io::{self, Write};
-                writeln!(io::stderr(), "{}:", line!()).unwrap();
+            {
+                use std::io::Write;
+                writeln!(std::io::stderr(), "\x1b[34;1m{}\x1b[m:", line!()).unwrap();
             }
         };
-        ($e: expr, $($es: expr),+ $(,)?) => {
-            if cfg!(debug_assertions) {
-                use std::io::{self, Write};
-
-                write!(io::stderr(), "{}:", line!()).unwrap();
-                write!(io::stderr(), " {} = {:?}", stringify!($e), $e).unwrap();
+        ($e:expr, $($es:expr),+) => {
+            {
+                use std::io::Write;
+                write!(std::io::stderr(), "\x1b[34;1m{}\x1b[m:", line!()).unwrap();
+                write!(
+                    std::io::stderr(),
+                    " \x1b[92;1m{}\x1b[m = {:?}",
+                    stringify!($e),
+                    $e
+                )
+                .unwrap();
                 $(
-                    write!(io::stderr(), " {} = {:?}", stringify!($es), $es).unwrap();
+                    write!(std::io::stderr(), ", \x1b[92;1m{}\x1b[m = {:?}", stringify!($es), $es).unwrap();
                 )+
-                writeln!(io::stderr()).unwrap();
+                writeln!(std::io::stderr()).unwrap();
             }
         };
 
         ($e: expr) => {
-            if cfg!(debug_assertions) {
-                use std::io::{self, Write};
+            {
+                use std::io::Write;
                 let result = $e;
-                writeln!(io::stderr(), "{}: {} = {:?}",
-                        line!(), stringify!($e), result)
-                    .unwrap();
+                writeln!(
+                    std::io::stderr(),
+                    "\x1b[34;1m{}\x1b[m: \x1b[92;1m{}\x1b[m = {:?}",
+                    line!(),
+                    stringify!($e),
+                    result
+                )
+                .unwrap();
             }
         };
     }
 
     #[macro_export]
     #[allow(unused_macros)]
-    /// Display a line of variables with colors
-    macro_rules! cecho {
+    macro_rules! dep {
         () => {
             if cfg!(debug_assertions) {
-                use std::io::{self, Write};
-                writeln!(io::stderr(), "\x1b[31;1m{}\x1b[m:", line!()).unwrap();
+                {
+                    use std::io::Write;
+                    write!(std::io::stderr(), "\x1b[31;1m{}\x1b[m ", "[DEBUG]").unwrap();
+                }                
+                ep!();
             }
         };
-        ($e: expr, $($es: expr),+ $(,)?) => {
+        ($e:expr, $($es:expr),+) => {
             if cfg!(debug_assertions) {
-                use std::io::{self, Write};
-
-                write!(io::stderr(), "\x1b[31;1m{}\x1b[m:", line!()).unwrap();
-                write!(io::stderr(), " \x1b[92;1m{}\x1b[m = {:?}", stringify!($e), $e).unwrap();
-                $(
-                    write!(io::stderr(), " \x1b[92;1m{}\x1b[m = {:?}", stringify!($es), $es).unwrap();
-                )+
-                writeln!(io::stderr()).unwrap();
+                {
+                    use std::io::Write;
+                    write!(std::io::stderr(), "\x1b[31;1m{}\x1b[m ", "[DEBUG]").unwrap();
+                }
+                ep!($e, $($es),+);
             }
         };
 
         ($e: expr) => {
             if cfg!(debug_assertions) {
-                use std::io::{self, Write};
-                let result = $e;
-                writeln!(io::stderr(), "\x1b[31;1m{}\x1b[m: \x1b[92;1m{}\x1b[m = {:?}",
-                        line!(), stringify!($e), result)
-                    .unwrap();
+                {
+                    use std::io::Write;
+                    write!(std::io::stderr(), "\x1b[31;1m{}\x1b[m ", "[DEBUG]").unwrap();
+                }
+                ep!($e);
             }
         };
     }
