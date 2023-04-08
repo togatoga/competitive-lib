@@ -59,8 +59,13 @@ pub mod fastio {
             let _ = self.stdin.read_line(&mut line);
             line.trim_end().to_string()
         }
+
         pub fn vec<T: std::str::FromStr>(&mut self, n: usize) -> Vec<T> {
             (0..n).map(|_| self.read()).collect()
+        }
+
+        pub fn vvec<T: std::str::FromStr>(&mut self, n: usize, m: usize) -> Vec<Vec<T>> {
+            (0..n).map(|_| self.vec::<T>(m)).collect::<Vec<Vec<T>>>()
         }
 
         pub fn chars(&mut self) -> Vec<char> {
