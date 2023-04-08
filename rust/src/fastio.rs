@@ -64,6 +64,10 @@ pub mod fastio {
             (0..n).map(|_| self.read()).collect()
         }
 
+        pub fn vchars(&mut self, n: usize) -> Vec<Vec<char>> {
+            (0..n).map(|_| self.chars()).collect::<Vec<Vec<char>>>()
+        }
+
         pub fn vvec<T: std::str::FromStr>(&mut self, n: usize, m: usize) -> Vec<Vec<T>> {
             (0..n).map(|_| self.vec::<T>(m)).collect::<Vec<Vec<T>>>()
         }
