@@ -97,8 +97,8 @@ mod tests {
     #[test]
     fn test_inv_module() {
         for m in 2..5000 {
-            for a in 1..1000 {
-                let g = a.gcd(m) as i64;
+            for a in 1i64..1000 {
+                let g = a.gcd(m);
                 let a = a / g;
                 let m = m / g;
                 if a == 1 || m == 1 {

@@ -8,13 +8,11 @@ pub mod monotone_convex_hull_trick {
         lines: VecDeque<(i64, i64)>,
     }
     fn sgn(x: i64) -> i64 {
-        if x < 0 {
-            -1
-        } else if x > 0 {
-            1
-        } else {
-            0
-        }
+        match x.cmp(&0) {
+            std::cmp::Ordering::Less => -1,
+            std::cmp::Ordering::Greater => 1,
+            _ => 0
+        }        
     }
     /// Returns a boolean whether a line `b` is unused.
     fn check(a: (i64, i64), b: (i64, i64), c: (i64, i64)) -> bool {
@@ -68,7 +66,7 @@ pub mod monotone_convex_hull_trick {
             } else {
                 let (a2, b2) = self.lines[self.lines.len() - 1];
                 if a2 == a {
-                    if b2 <= b2 {
+                    if b2 <= b {
                         return;
                     }
                     self.lines.pop_back();
