@@ -51,7 +51,7 @@ pub mod fastio {
             }
             self.buffer.pop_front().unwrap().parse::<T>().ok().unwrap()
         }
-        pub fn read1<T: std::str::FromStr + Sub<Output = T> + From<i8>>(&mut self) -> T {
+        pub fn read1<T: std::str::FromStr + Sub<Output = T> + From<u8>>(&mut self) -> T {
             self.read::<T>() - T::from(1)
         }
         pub fn read_line(&mut self) -> String {
