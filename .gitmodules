@@ -5,8 +5,8 @@
 	path = rust/ac-library-rs
 	url = https://github.com/rust-lang-ja/ac-library-rs
 [submodule "rust/library-rs"]
-	path = rust/library-rs
+	path = rust/third/library-rs
 	url = https://github.com/rsk0315/library-rs
 [submodule "rust/competitive-programming-rs"]
-	path = rust/competitive-programming-rs
+	path = rust/third/competitive-programming-rs
 	url = https://github.com/kenkoooo/competitive-programming-rs
