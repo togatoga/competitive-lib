@@ -47,7 +47,7 @@ pub mod trie {
         /// `trie.add(&['a', 'b', 'c'])`.
         /// `trie.add(&['a', 'b'])`.
         /// `trie.add(&['a'])`.
-        /// `trie.count_with_prefix(&['a'])` => 3
+        /// `trie.count_prefixed_with(&['a'])` => 3
         pub fn count_prefixed_with(&self, s: &[char]) -> usize {
             if let Some(root) = self.seek(s) {
                 root.count_prefixed_with_inner()
@@ -87,7 +87,7 @@ pub mod trie {
                 child.as_ref().seek(&s[1..])
             } else {
                 None
-            }            
+            }
         }
 
         /// Returns the number of string `s` in `TrieAlpha`.
@@ -104,7 +104,6 @@ pub mod trie {
                 0
             }
         }
-        
     }
 }
 #[cfg(test)]
@@ -115,29 +114,35 @@ mod test {
     fn test_trie_alpha() {
         let mut trie = TrieAlpha::new();
 
-    
         assert_eq!(trie.count(&['a', 'b', 'c']), 0);
         trie.add(&['a', 'b', 'c']);
         assert_eq!(trie.count(&['a', 'b', 'c']), 1);
 
-    
         trie.add(&['a', 'b']);
-        // abc, ab        
+        // abc, ab
         trie.add(&['a']);
-        // abc, ab, a       
+        // abc, ab, a
         trie.add(&['a', 'c']);
         // abc, ab, a, ac
         trie.add(&['b', 'c']);
         // abc, ab, a, ac, bc
 
-
         // abc, ab, a
-        assert_eq!(trie.count_prefix_of(&['a', 'b', 'c']), 3);        
+        assert_eq!(trie.count_prefix_of(&['a', 'b', 'c']), 3);
         // ac, a
         assert_eq!(trie.count_prefix_of(&['a', 'c']), 2);
 
-
         trie.add(&['a', 'b']);
-        assert_eq!(trie.count(&['a', 'b']), 2);        
+        assert_eq!(trie.count(&['a', 'b']), 2);
+    }
+
+    #[test]
+    fn test_count_with_prefix() {
+        let mut trie = TrieAlpha::new();
+        trie.add(&['a', 'b', 'c']);
+        trie.add(&['a', 'b']);
+        trie.add(&['a']);
+        assert_eq!(trie.count_prefixed_with(&['a']), 3);
+        assert_eq!(trie.count_prefixed_with(&['c']), 0);
     }
 }
