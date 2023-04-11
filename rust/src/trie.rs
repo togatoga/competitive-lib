@@ -83,8 +83,11 @@ pub mod trie {
             let c = s[0];
             assert!(c.is_ascii_lowercase() && c.is_ascii_alphabetic());
             let idx = c as usize - 'a' as usize;
-            self.childs[idx].as_ref()?;
-            self.childs[idx].as_ref().expect("no child").seek(&s[1..])
+            if let Some(child) = self.childs[idx].as_ref() {
+                child.as_ref().seek(&s[1..])
+            } else {
+                None
+            }            
         }
 
         /// Returns the number of string `s` in `TrieAlpha`.
