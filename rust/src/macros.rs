@@ -71,7 +71,7 @@ pub mod macros {
                 {
                     use std::io::Write;
                     write!(std::io::stderr(), "\x1b[31;1m{}\x1b[m ", "[DEBUG]").unwrap();
-                }                
+                }
                 ep!();
             }
         };

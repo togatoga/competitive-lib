@@ -266,15 +266,13 @@ pub mod geometry2d {
         }
     }
 
-
     /// Returns an enum `Position` indicating a point is (in|on) points(`Polygon`) or not.
     /// The prerequisite `is_convex(&points)` is true.                                             c
     pub fn convex_contains<T: Geo2dNum>(points: &Polygon<T>, point: Point2d<T>) -> Position {
         let n = points.len();
         let p1 = (points[1] - points[0]).cross(&(point - points[0]));
         let p2 = (points[n - 1] - points[0]).cross(&(point - points[0]));
-        
-        
+
         if p1.is_negative() || p2.is_positive() {
             return Position::PolygonOut;
         }
@@ -295,7 +293,7 @@ pub mod geometry2d {
         if p.is_zero() {
             return Position::PolygonOn;
         }
-        
+
         if p.is_positive() {
             if p1.is_zero() || p2.is_zero() {
                 return Position::PolygonOn;

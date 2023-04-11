@@ -60,7 +60,7 @@ pub mod trie {
         /// `trie.add(&['a', 'b', 'c'])`.
         /// `trie.add(&['a', 'b'])`.
         /// `trie.add(&['a'])`.
-        /// `trie.count_prefix(&['a', 'b', 'c'])` => 3
+        /// `trie.count_prefix_of(&['a', 'b', 'c'])` => 3
         pub fn count_prefix_of(&self, s: &[char]) -> usize {
             if s.is_empty() {
                 return self.count;
@@ -143,6 +143,18 @@ mod test {
         trie.add(&['a', 'b']);
         trie.add(&['a']);
         assert_eq!(trie.count_prefixed_with(&['a']), 3);
+        assert_eq!(trie.count_prefixed_with(&['a', 'b', 'c']), 1);
         assert_eq!(trie.count_prefixed_with(&['c']), 0);
+    }
+
+    #[test]
+    fn test_count_prefix_of() {
+        let mut trie = TrieAlpha::new();
+        trie.add(&['a', 'b', 'c']);
+        trie.add(&['a', 'b']);
+        trie.add(&['a']);
+        assert_eq!(trie.count_prefix_of(&['a']), 1);
+        assert_eq!(trie.count_prefix_of(&['a', 'b', 'c']), 3);
+        assert_eq!(trie.count_prefix_of(&['c']), 0);
     }
 }

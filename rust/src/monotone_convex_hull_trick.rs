@@ -11,8 +11,8 @@ pub mod monotone_convex_hull_trick {
         match x.cmp(&0) {
             std::cmp::Ordering::Less => -1,
             std::cmp::Ordering::Greater => 1,
-            _ => 0
-        }        
+            _ => 0,
+        }
     }
     /// Returns a boolean whether a line `b` is unused.
     fn check(a: (i64, i64), b: (i64, i64), c: (i64, i64)) -> bool {
