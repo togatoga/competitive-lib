@@ -38,3 +38,4 @@ pub mod treap;
 pub mod union_find;
 pub mod utils;
 pub mod xorshift;
+pub mod trie;
