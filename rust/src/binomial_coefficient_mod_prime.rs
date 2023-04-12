@@ -34,8 +34,7 @@ pub mod binomial_coefficient_mod_prime {
     }
 
     /// find a^-1 (a^-1*a == 1 mod m)
-    /// a and m must be relative prime.
-    /// But m isn't necessariliy prime
+    /// a and m must be relative prime but m isn't necessarily prime.
     fn inv_module(a: i64, m: i64) -> i64 {
         let mut x: i64 = 0;
         let mut y: i64 = 0;
