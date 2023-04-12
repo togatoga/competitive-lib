@@ -24,6 +24,7 @@ pub mod matrix;
 pub mod median_multiset;
 pub mod mod_comb;
 pub mod mod_int;
+pub mod mod_util;
 pub mod monotone_convex_hull_trick;
 pub mod nonnan;
 pub mod primal_dual;
