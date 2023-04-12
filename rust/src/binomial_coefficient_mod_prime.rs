@@ -98,7 +98,7 @@ pub mod binomial_coefficient_mod_prime {
 
 #[cfg(test)]
 mod test {
-    use crate::binomial_coefficient_mod_prime::binomial_coefficient_mod_prime::BinomialCoefficient;
+    use super::binomial_coefficient_mod_prime::BinomialCoefficient;
 
     fn naive_combs(n: i64, m: i64) -> Vec<Vec<i64>> {
         let n = n as usize;
