@@ -51,7 +51,7 @@ pub mod matrix {
     impl<T: MatrixTrait + Mul<Output = T> + AddAssign + MulAssign> Matrix<T> {
         /// A^k
         /// O(hw^2logK)
-        pub fn pow(&self, mut k: usize, one: T) -> Self {
+        pub fn pow(&self, mut k: i64, one: T) -> Self {
             assert!(self.height() == self.width());
             let mut result = Self::new(self.height(), self.width());
             for i in 0..self.height() {
