@@ -3,7 +3,6 @@ use cargo_snippet::snippet;
 #[snippet]
 pub mod mod_util {
     use std::collections::BTreeMap;
-
     /// Calculates a minimum index `i` that meets a^i = b mod m if exists.
     /// `a` and `m` must be relative prime but `m` isn't necessarily prime.
     /// O(sqrt(m))
@@ -11,21 +10,19 @@ pub mod mod_util {
         a %= m;
         b %= m;
         let sqrt_m = std::cmp::max(1, (m as f64).sqrt() as i64);
-
         let a_pow = {
             let mut a_pow = BTreeMap::default();
             let mut x = 1;
-            for j in 0..sqrt_m {
+            for j in 0..=sqrt_m {
                 a_pow.entry(x).or_insert(j);
                 x = (x * a) % m;
             }
             a_pow
         };
-
         let inv_a = mod_inv(a, m);
         let inv_a_sqrt_m = mod_pow(inv_a, sqrt_m, m);
         let mut x = b;
-        for i in 0..sqrt_m {
+        for i in 0..=sqrt_m {
             if let Some(j) = a_pow.get(&x) {
                 let idx = i * sqrt_m + j;
                 return Some(idx);
@@ -34,7 +31,6 @@ pub mod mod_util {
         }
         None
     }
-
     /// Calculates x^n mod m.
     pub fn mod_pow(x: i64, n: i64, m: i64) -> i64 {
         if n == 0 {
@@ -47,7 +43,6 @@ pub mod mod_util {
         }
         res % m
     }
-
     /// Calculates a^-1 (a^-1*a == 1 mod m)
     /// `a` and `m` must be relative prime but `m` isn't necessarily prime.
     pub fn mod_inv(a: i64, m: i64) -> i64 {
@@ -56,7 +51,6 @@ pub mod mod_util {
         extended_gcd(a, m, &mut x, &mut y);
         (x % m + m) % m
     }
-
     /// A return value is gcd(a, b)
     /// ax + by = gcd(a, b)
     /// this function sets x and y to satisfiy an above formula.
