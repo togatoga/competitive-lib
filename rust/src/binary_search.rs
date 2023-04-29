@@ -2,51 +2,54 @@ use cargo_snippet::snippet;
 #[allow(clippy::module_inception)]
 #[snippet(name = "binary_search")]
 pub mod binary_search {
-    use std::cmp::Ordering;
+    use std::{cmp::Ordering, collections::VecDeque};
     pub trait BinarySearch<T> {
         fn lower_bound(&self, x: &T) -> Option<usize>;
         fn upper_bound(&self, x: &T) -> Option<usize>;
     }
-
-    impl<T: Ord> BinarySearch<T> for [T] {
-        //greater than or equal
-        fn lower_bound(&self, x: &T) -> Option<usize> {
-            let mut left = 0;
-            let mut right = self.len();
-            let mut result = None;
-            while left < right {
-                let med = (left + right) / 2;
-                match self[med].cmp(x) {
-                    Ordering::Less => {
-                        left = med + 1;
+    macro_rules! impl_binary_search {
+        ($($t:ty)*) => ($(
+            impl<T: Ord> BinarySearch<T> for $t {
+                fn lower_bound(&self, x: &T) -> Option<usize> {
+                    let mut left = 0;
+                    let mut right = self.len();
+                    let mut result = None;
+                    while left < right {
+                        let med = (left + right) / 2;
+                        match self[med].cmp(x) {
+                            Ordering::Less => {
+                                left = med + 1;
+                            }
+                            Ordering::Equal | Ordering::Greater => {
+                                result = Some(med);
+                                right = med;
+                            }
+                        }
                     }
-                    Ordering::Equal | Ordering::Greater => {
-                        result = Some(med);
-                        right = med;
+                    result
+                }
+                fn upper_bound(&self, x: &T) -> Option<usize> {
+                    let mut left = 0;
+                    let mut right = self.len();
+                    let mut result = None;
+                    while left < right {
+                        let med = (left + right) / 2;
+                        match self[med].cmp(x) {
+                            Ordering::Equal | Ordering::Less => {
+                                left = med + 1;
+                            }
+                            Ordering::Greater => {
+                                result = Some(med);
+                                right = med;
+                            }
+                        }
                     }
+                    result
                 }
             }
-            result
-        }
-        fn upper_bound(&self, x: &T) -> Option<usize> {
-            let mut left = 0;
-            let mut right = self.len();
-            let mut result = None;
-            while left < right {
-                let med = (left + right) / 2;
-                match self[med].cmp(x) {
-                    Ordering::Equal | Ordering::Less => {
-                        left = med + 1;
-                    }
-                    Ordering::Greater => {
-                        result = Some(med);
-                        right = med;
-                    }
-                }
-            }
-            result
-        }
+        )*)
     }
+    impl_binary_search!([T] VecDeque<T>);
 }
 
 #[cfg(test)]
