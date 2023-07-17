@@ -21,6 +21,8 @@ pub mod segment_tree {
                 init_value,
             }
         }
+
+        /// Sets a `k`-th value with `value`
         pub fn update(&mut self, k: usize, value: T) {
             let mut k = k;
             k += self.n - 1;
@@ -30,7 +32,7 @@ pub mod segment_tree {
                 self.seg[k] = (self.f)(self.seg[2 * k + 1], self.seg[2 * k + 2]);
             }
         }
-        //Get a query result in the range [left, right)
+        /// Calculates a query result in the range [left, right)
         pub fn query(&self, left: usize, right: usize) -> T {
             assert!(left < right);
             self.query_range(left, right, 0, 0, self.n)
@@ -74,7 +76,7 @@ mod test {
     use rand::{thread_rng, Rng};
 
     #[test]
-    fn random_update() {
+    fn random_update_and_max() {
         const N: usize = 1000;
         //max segment tree
         let mut seg = SegmentTree::new(N, 0, std::cmp::max);
@@ -93,6 +95,29 @@ mod test {
             //[l, r + 1)
             let x = values.iter().skip(l).take(r - l + 1).max().unwrap();
             assert_eq!(seg.query(l, r + 1), *x);
+        }
+    }
+
+    #[test]
+    fn random_update_and_sum() {
+        const N: usize = 1000;
+        // max segment tree
+        let mut seg = SegmentTree::new(N, 0, |x, y| x + y);
+        let mut values = vec![0; N];
+        for _ in 0..10000 {
+            let value = thread_rng().gen_range(0, 1000);
+            let k = thread_rng().gen_range(0, N);
+            values[k] = value;
+            seg.update(k, value);
+            // [0, n)
+            assert_eq!(seg.query(0, N), values.iter().sum::<i32>());
+
+            let l = thread_rng().gen_range(0, N);
+            let r = thread_rng().gen_range(l, N);
+            // two point
+            // [l, r + 1)
+            let x = values.iter().skip(l).take(r - l + 1).sum::<i32>();
+            assert_eq!(seg.query(l, r + 1), x);
         }
     }
 }
