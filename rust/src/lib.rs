@@ -34,6 +34,7 @@ pub mod rolling_hash;
 pub mod rustc_hash;
 pub mod scc;
 pub mod segment_tree;
+pub mod sum2d;
 pub mod timer;
 pub mod treap;
 pub mod tree_diameter;
