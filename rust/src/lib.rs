@@ -17,6 +17,7 @@ pub mod gcd;
 pub mod geometry2d;
 pub mod heavy_light_decomposition;
 pub mod karatsuba;
+pub mod lazy_assign_segment_tree;
 pub mod lazy_segment_tree;
 pub mod lca;
 pub mod macros;

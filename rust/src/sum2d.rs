@@ -7,7 +7,7 @@ pub mod sum2d {
     #[derive(Debug, Default, Clone)]
     pub struct Sum2d<T> {
         /// 1-index
-        data: Vec<Vec<T>>, 
+        data: Vec<Vec<T>>,
     }
 
     impl<T: Copy + Clone + Add<Output = T> + AddAssign + Sub<Output = T> + Default> Sum2d<T> {
