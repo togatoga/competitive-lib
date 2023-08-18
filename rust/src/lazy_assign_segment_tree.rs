@@ -1,3 +1,5 @@
+use cargo_snippet::snippet;
+#[snippet]
 #[allow(clippy::module_inception)]
 /// An original code is https://atcoder.jp/contests/abl/submissions/34700239
 pub mod lazy_assign_segment_tree {
