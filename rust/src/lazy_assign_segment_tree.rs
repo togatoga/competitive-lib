@@ -152,8 +152,13 @@ pub mod lazy_assign_segment_tree {
             let lazy_table_index = self.lazy[v];
             if lazy_table_index != EMPTY_INDEX {
                 let old_lazy_table_index = std::mem::replace(&mut self.lazy[v], EMPTY_INDEX);
-                // debug_assert!(self.lazy[2 * v] == EMPTY_INDEX);
-                // debug_assert!(self.lazy[2 * v + 1] == EMPTY_INDEX);
+                assert!(
+                    self.lazy[2 * v] == EMPTY_INDEX || self.lazy[2 * v] < old_lazy_table_index - 1
+                );
+                assert!(
+                    self.lazy[2 * v + 1] == EMPTY_INDEX
+                        || self.lazy[2 * v + 1] < old_lazy_table_index - 1
+                );
                 debug_assert!(old_lazy_table_index >= 1);
                 self.lazy[2 * v] = old_lazy_table_index - 1;
                 self.lazy[2 * v + 1] = old_lazy_table_index - 1;
