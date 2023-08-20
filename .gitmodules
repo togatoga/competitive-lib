@@ -2,7 +2,7 @@
 	path = cpp/Togasat
 	url = https://github.com/togatoga/Togasat.git
 [submodule "rust/ac-library-rs"]
-	path = rust/ac-library-rs
+	path = rust/third/ac-library-rs
 	url = https://github.com/rust-lang-ja/ac-library-rs
 [submodule "rust/library-rs"]
 	path = rust/third/library-rs
