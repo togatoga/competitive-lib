@@ -146,4 +146,94 @@ pub mod union_find {
             }
         }
     }
+    /// Weighted Union Find
+    pub struct WeightedUnionFind<Abel> {
+        par: Vec<usize>,
+        rank: Vec<usize>,
+        diff_weight: Vec<Abel>,
+    }
+
+    impl<Abel> WeightedUnionFind<Abel>
+    where
+        Abel: std::ops::Add<Output = Abel>
+            + std::ops::Sub<Output = Abel>
+            + std::ops::AddAssign
+            + std::ops::SubAssign
+            + std::ops::Neg<Output = Abel>
+            + Copy,
+    {
+        pub fn new(n: usize, sum_unity: Abel) -> Self {
+            let mut par = Vec::with_capacity(n);
+            let mut rank = Vec::with_capacity(n);
+            let mut diff_weight = Vec::with_capacity(n);
+
+            for i in 0..n {
+                par.push(i);
+                rank.push(0);
+                diff_weight.push(sum_unity);
+            }
+
+            WeightedUnionFind {
+                par,
+                rank,
+                diff_weight,
+            }
+        }
+
+        /// return root of x
+        pub fn root(&mut self, x: usize) -> usize {
+            if self.par[x] == x {
+                x
+            } else {
+                let r = self.root(self.par[x]);
+                let w = self.diff_weight[self.par[x]];
+                self.diff_weight[x] += w;
+                self.par[x] = r;
+                r
+            }
+        }
+
+        /// return weight of x    
+        pub fn weight(&mut self, x: usize) -> Abel {
+            self.root(x);
+            self.diff_weight[x]
+        }
+
+        /// return true if x and y are in same set
+        pub fn is_same_set(&mut self, x: usize, y: usize) -> bool {
+            self.root(x) == self.root(y)
+        }
+
+        /// merge x and y with weight(y) = weight(x) + w
+        /// return true if x and y are in different set
+        pub fn merge(&mut self, mut x: usize, mut y: usize, mut w: Abel) -> bool {
+            w += self.weight(x);
+            w -= self.weight(y);
+            x = self.root(x);
+            y = self.root(y);
+
+            if x == y {
+                return false;
+            }
+
+            if self.rank[x] < self.rank[y] {
+                std::mem::swap(&mut x, &mut y);
+                w = -w;
+            }
+
+            if self.rank[x] == self.rank[y] {
+                self.rank[x] += 1;
+            }
+
+            self.par[y] = x;
+            self.diff_weight[y] = w;
+            true
+        }
+
+        /// return weight(y) - weight(x)
+        /// require x and y are in same set
+        pub fn diff(&mut self, x: usize, y: usize) -> Abel {
+            self.weight(y) - self.weight(x)
+        }
+    }
 }
