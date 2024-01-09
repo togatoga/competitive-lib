@@ -135,7 +135,7 @@ mod tests {
         assert_eq!(set.len(), 5);
 
         let elements = vec![1, 2, 2, 3, 4, 5, 5, 6];
-        let set = MedianMultiSet::from_iter(elements.into_iter());
+        let set = MedianMultiSet::from_iter(elements);
         assert_eq!(set.median(), (Some(&3), Some(&4)));
     }
 }

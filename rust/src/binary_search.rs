@@ -58,7 +58,7 @@ mod tests {
     use rand::{thread_rng, Rng};
     #[test]
     fn test_binary_search() {
-        let vec = vec![-100, 0, 1, 2, 10, 100, 1000];
+        let vec = [-100, 0, 1, 2, 10, 100, 1000];
         assert_eq!(vec.lower_bound(&1), Some(2));
         assert_eq!(vec.lower_bound(&100), Some(5));
         assert_eq!(vec.lower_bound(&-5000), Some(0));

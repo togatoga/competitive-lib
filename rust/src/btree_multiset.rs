@@ -281,7 +281,7 @@ mod tests {
     #[test]
     fn test_iter_range() {
         let elements = vec![0, 0, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6];
-        let mset = BTreeMultiSet::from_iter(elements.clone().into_iter());
+        let mset = BTreeMultiSet::from_iter(elements.clone());
         for (&x, &y) in mset.iter().zip(elements.iter()) {
             assert_eq!(x, y);
         }

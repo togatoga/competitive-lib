@@ -3,9 +3,10 @@ use cargo_snippet::snippet;
 #[allow(clippy::module_inception)]
 /// An original implementation is `https://atcoder.jp/contests/abc332/submissions/48383924`
 /// Verified by `https://atcoder.jp/contests/abc332/submissions/49187833`
-pub mod segment_tree_rupq {
-    /// `SegmentTreeRUPQ` stands for Segment Tree Range Update Point Query.
-    pub struct SegmentTreeRUPQ<T, F> {
+pub mod segment_tree_rapq {
+    /// `SegmentTreeRAPQ` stands for Segment Tree Range Apply Point Query.
+    /// interval addition, interval assignment, interval chmin, and interval chmax.
+    pub struct SegmentTreeRAPQ<T, F> {
         size: usize,
         bit: usize,
         data: Vec<T>,
@@ -13,7 +14,7 @@ pub mod segment_tree_rupq {
         op: F,
     }
 
-    impl<T, F> SegmentTreeRUPQ<T, F>
+    impl<T, F> SegmentTreeRAPQ<T, F>
     where
         T: Clone,
         F: Fn(&T, &T) -> T,
@@ -50,7 +51,7 @@ pub mod segment_tree_rupq {
         }
 
         /// Updates the interval (l, r] with f.
-        pub fn update(&mut self, l: usize, r: usize, f: T) {
+        pub fn apply(&mut self, l: usize, r: usize, f: T) {
             assert!(l <= r && r <= self.size);
             if l == r {
                 return;

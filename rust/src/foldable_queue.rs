@@ -117,7 +117,7 @@ mod test {
     fn test_sliding_minimum_elements() {
         let mut fque = foldable_queue::FoldableQueue::new(std::cmp::min);
         let k = 3;
-        let v = vec![1, 7, 7, 4, 8, 1, 6];
+        let v = [1, 7, 7, 4, 8, 1, 6];
         let n = v.len();
         v.iter().take(k).for_each(|x| fque.push(*x));
         let mut results = vec![];
