@@ -1,7 +1,7 @@
 use cargo_snippet::snippet;
 #[allow(clippy::module_inception)]
 #[snippet]
-pub mod segment_tree {
+pub mod segment_tree_purq {
 
     /// `SegmentTreePURQ` stands for Segment Tree Point Update Range Query.
     /// interval addition, interval assignment, interval chmin, and interval chmax.
@@ -81,7 +81,7 @@ pub mod segment_tree {
 
 #[cfg(test)]
 mod test {
-    use super::segment_tree::SegmentTreePURQ;
+    use super::segment_tree_purq::SegmentTreePURQ;
     use rand::{thread_rng, Rng};
 
     #[test]
