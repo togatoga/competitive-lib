@@ -23,6 +23,7 @@ pub mod lca;
 pub mod macros;
 pub mod matrix;
 pub mod median_multiset;
+pub mod minimum_k_sum;
 pub mod mod_comb;
 pub mod mod_int;
 pub mod mod_util;
